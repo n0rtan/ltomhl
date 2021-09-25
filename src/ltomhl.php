@@ -23,7 +23,7 @@ try {
 
     // load File List
     loadFileList();
-    echo var_export($fileList, true);
+    echo var_export(getFileList(), true);
 
     // load mhl
 
