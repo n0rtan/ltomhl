@@ -20,7 +20,15 @@ try {
     loadScanDir();
     printState();
 
-    
+    // loadFileList
+
+    // load mhl
+
+    // load/create log
+
+    // verify hashes
+
+    // make report
 
 } catch (Exception $exception) {
     echo "Some error occurs: {$exception->getMessage()}";

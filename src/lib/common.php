@@ -39,6 +39,8 @@ function printState()
 {
     global $scanDir;
 
+    echo "----------------------\n";
     echo "Current directory: " . getcwd() . "\n";
     echo "Scan dir: {$scanDir}\n";
+    echo "----------------------\n\n";
 }
