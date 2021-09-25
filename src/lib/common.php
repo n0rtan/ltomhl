@@ -52,3 +52,12 @@ function printState()
     echo "Scan dir: {$scanDir}\n";
     echo "----------------------\n\n";
 }
+
+function printDirectoryStats()
+{
+    $fileList = getFileList();
+
+    echo "----------------------\n";
+    echo "Files in list: " . count($fileList) . "\n";
+    echo "----------------------\n";
+}

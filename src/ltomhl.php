@@ -3,6 +3,7 @@
 use function lib\arguments\isHelpRequested;
 use function lib\arguments\prepareArguments;
 use function lib\common\loadScanDir;
+use function lib\common\printDirectoryStats;
 use function lib\common\printState;
 use function lib\common\printUsage;
 
@@ -28,13 +29,15 @@ try {
     logMessage('Loading MHL files data');
     loadMhlFiles();
 
-    echo var_export(getFileList(), true)."\n";
+    printDirectoryStats();
 
     logMessage('Init progress');
     loadOrCreateHashingLog();
 
     logMessage('Verifying');
-    verifyHashes();
+    $processedCount = verifyHashes();
+
+    logMessage("{$processedCount} files processed.");
 
     // make report
 

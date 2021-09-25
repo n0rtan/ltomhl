@@ -18,6 +18,11 @@ function loadOrCreateHashingLog()
     $hashingLogFilePath = $currentDir . DIRECTORY_SEPARATOR . $hashingProgressFileName;
     
     $data = file($hashingLogFilePath);
+    
+    if (empty($data)) {
+        return;
+    }
+
     $line = $data[count($data)-1];
 
     $lastHashedFile = trim($line);
@@ -39,5 +44,8 @@ function logProgress($filePath)
 
 function logMessage($message)
 {
-    echo "[".date('Y-m-d H:i:s')."] - {$message}\n";
+    echo $message . "\n";
+
+    $logMessage = "[".date('Y-m-d H:i:s')."] - {$message}\n";
+    // write to log file
 }

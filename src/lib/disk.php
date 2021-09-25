@@ -25,9 +25,7 @@ function collectFiles($dir, $file, $filepath)
     $flashDir = substr($dir, strlen(getScanDir())+1);
     $relativeFilepath = $flashDir . DIRECTORY_SEPARATOR . $file;
 
-    $fileList[$relativeFilepath] = [
-        //'file_original' => $flashDir . DIRECTORY_SEPARATOR . $file,
-    ];
+    $fileList[$relativeFilepath] = [];
 }
 
 function read_dir($dir)

@@ -93,7 +93,7 @@ function chooseHash($data): array
         }
     }
 
-    throw new Exception("No hash found for {$data->file->__toString()}", ERROR_NO_HASH_FOUNT_IN_MHL);
+    throw new Exception("No hash found.", ERROR_NO_HASH_FOUNT_IN_MHL);
 }
 
 function normalizePath($path)
@@ -112,24 +112,24 @@ function normalizePath($path)
 function calcHash($filePath, $hashType): string
 {
     ob_start();
-    exec("mhl hash -t {$hashType} {$filePath} 2>&1", $output);
-    $result = ob_get_contents();
+    exec("mhl.exe hash -t {$hashType} {$filePath} 2>&1", $output);
     ob_end_clean();
 
-    //exec("mhl hash -t {$hashType} {$filePath}", $output);
-    //$output[0] = 1;
-    if (count($output) > 1) {
+    if (count($output) !== 1) {
         throw new Exception(
             "Invalid mhl hash output: \n" . implode("\n", $output),
             ERROR_INVALID_MHL_HASHING_OUTPUT
         );
     }
 
-    return $output[0];
+    return trim(explode('=', $output[0])[1]);
 }
 
-function verifyHashes()
+function verifyHashes(): int
 {
+    global $hashPriorityList;
+
+    $filesProcessed = 0;
     $fileList = getFileList();
     $scanDir = getScanDir();
 
@@ -158,19 +158,23 @@ function verifyHashes()
             $isNonInMhl = true;
         }
 
-        $calculatedHash = calcHash($fileAbsolutePath, $hashType);
-
         logProgress($filePath);
 
+        $calculatedHash = calcHash($fileAbsolutePath, $hashType ?? $hashPriorityList[0]);
+
         if ($isNonInMhl) {
-            logMessage("$filePath not exists in mhl file. Calculated has is {$calculatedHash}");
+            logMessage("$filePath not exists in mhl file. Calculated hash is {$calculatedHash}");
             continue;
-        }
+        }        
 
         if ($savedFromMhlHash !== $calculatedHash) {
             logMessage("Bad hash for file: $filePath");
         } else {
             logMessage("$filePath OK!");
         }
+
+        $filesProcessed++;
     }
+
+    return $filesProcessed;
 }
