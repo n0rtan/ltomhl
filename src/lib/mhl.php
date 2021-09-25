@@ -1,6 +1,7 @@
 <?php
 
 use function lib\arguments\getMhlFilePaths;
+use function lib\common\getScanDir;
 
 $hashPriorityList = [
     'xxhash64be',
@@ -87,7 +88,7 @@ function chooseHash($data): array
         if (!empty($data->{$needed})) {
             return [
                 $needed,
-                $data->{$needed}->__toString(),
+                $data->{$needed} . '',
             ];
         }
     }
@@ -108,13 +109,68 @@ function normalizePath($path)
     );    
 }
 
-function calcHash($file_path): string
+function calcHash($filePath, $hashType): string
 {
-    exec("mhl hash -t md5 {$file_path}", $output);
+    ob_start();
+    exec("mhl hash -t {$hashType} {$filePath} 2>&1", $output);
+    $result = ob_get_contents();
+    ob_end_clean();
 
+    //exec("mhl hash -t {$hashType} {$filePath}", $output);
+    //$output[0] = 1;
     if (count($output) > 1) {
-        throw new Exception("Invalid mhl hash output: \n" . implode("\n", $output));
+        throw new Exception(
+            "Invalid mhl hash output: \n" . implode("\n", $output),
+            ERROR_INVALID_MHL_HASHING_OUTPUT
+        );
     }
 
     return $output[0];
+}
+
+function verifyHashes()
+{
+    $fileList = getFileList();
+    $scanDir = getScanDir();
+
+    $lastHashedFile = getLastHashedFile();
+    $paused = !empty($lastHashedFile);
+        
+    foreach($fileList as $filePath => $fileData) {
+
+        if ($paused) {
+            if ($lastHashedFile !== $filePath) {
+                continue;
+            } else {
+                $paused = false;
+                continue;
+            }        
+        }
+        
+        $fileAbsolutePath = $scanDir . DIRECTORY_SEPARATOR . $filePath;
+        $isNonInMhl = false;
+        try {
+            list($hashType, $savedFromMhlHash) = chooseHash((object)$fileData);
+        } catch(Exception $exception) {
+            if ($exception->getCode() !== ERROR_NO_HASH_FOUNT_IN_MHL) {
+                throw $exception;
+            }
+            $isNonInMhl = true;
+        }
+
+        $calculatedHash = calcHash($fileAbsolutePath, $hashType);
+
+        logProgress($filePath);
+
+        if ($isNonInMhl) {
+            logMessage("$filePath not exists in mhl file. Calculated has is {$calculatedHash}");
+            continue;
+        }
+
+        if ($savedFromMhlHash !== $calculatedHash) {
+            logMessage("Bad hash for file: $filePath");
+        } else {
+            logMessage("$filePath OK!");
+        }
+    }
 }

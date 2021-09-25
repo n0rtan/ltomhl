@@ -22,13 +22,19 @@ try {
     loadScanDir();
     printState();
 
+    logMessage('Loading directory contents');
     loadFileList();
+
+    logMessage('Loading MHL files data');
     loadMhlFiles();
-    echo var_export(getFileList(), true);
 
-    // load/create log
+    echo var_export(getFileList(), true)."\n";
 
-    // verify hashes
+    logMessage('Init progress');
+    loadOrCreateHashingLog();
+
+    logMessage('Verifying');
+    verifyHashes();
 
     // make report
 
