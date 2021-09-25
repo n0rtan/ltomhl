@@ -31,17 +31,29 @@ function prepareArguments()
 
 function verifyArguments(): void
 {
-    global $argv, $arguments;
+    global $arguments;
 
     $isHelpPassed = isset($arguments[ARG_KEY_HELP]);
     $isScanDirectoryPassed = !empty($arguments[ARG_KEY_SCAN_DIRECTORY]);
     $isMhlFilesPassed = !empty($arguments[ARG_KEY_MHL_FILES]);
-
+    
     if (!$isScanDirectoryPassed && !$isMhlFilesPassed && !$isHelpPassed) {
         throw new Exception(
-            "Neither the scan dir nor the mhl files is specified. Passed arguments list: \n" . print_r($arguments, true)
+            "\n\tNeither the scan dir nor the mhl files is specified.\n" .
+            "\tPassed arguments list: \n" . print_r($arguments, true)
         );
     }
+
+    $isMhlFilesMoreThanOne = count($arguments[ARG_KEY_MHL_FILES]) > 1;
+
+    if ($isMhlFilesMoreThanOne && !$isScanDirectoryPassed) {
+        throw new Exception(
+            "\n\tWe have several mhl files and empty scan directory.\n" . 
+            "\tPlease set scan directory or select single mhl file.\n" . 
+            "\tPassed arguments list: \n" . print_r($arguments, true)
+        );
+    }
+
 }
 
 function getMhlFilePath(): string
@@ -59,8 +71,14 @@ function getScanDir(): string
 {
     global $arguments;
 
-    if (empty($arguments[ARG_KEY_SCAN_DIRECTORY][0]) || !is_dir($arguments[ARG_KEY_SCAN_DIRECTORY][0])) {
-        throw new Exception("Scan dir is not specified", ERROR_SCAN_DIR_NOT_SPECIFIED);
+    if (
+        empty($arguments[ARG_KEY_SCAN_DIRECTORY][0]) ||
+        !is_dir($arguments[ARG_KEY_SCAN_DIRECTORY][0])
+       ) {
+        throw new Exception(
+            "Scan dir is not specified",
+            ERROR_SCAN_DIR_NOT_SPECIFIED
+        );
     }
 
     return $arguments[ARG_KEY_SCAN_DIRECTORY][0];

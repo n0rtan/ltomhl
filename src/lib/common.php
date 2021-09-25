@@ -12,6 +12,13 @@ require_once('disk.php');
 
 $scanDir = '';
 
+function getScanDir()
+{
+    global $scanDir;
+
+    return $scanDir;
+}
+
 function loadScanDir(): string
 {
     global $scanDir;

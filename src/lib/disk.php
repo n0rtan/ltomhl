@@ -1,18 +1,55 @@
 <?php
 
-function get_scan_dir()
-{
-    $mhl_file_path = get_mhl_file_path();
+use function lib\common\getScanDir;
 
-    return get_scan_dir_from_mhl_file_path($mhl_file_path);
+$fileList = [];
+
+function loadFileList()
+{
+    $scanDir = getScanDir();
+
+    read_dir($scanDir);
 }
 
-function get_scan_dir_from_mhl_file_path($mhl_file_path)
+function getFileList()
 {
-    return dirname($mhl_file_path);
+    global $fileList;
+
+    return $fileList;
 }
 
-function disk_read(string $file_path, callable $mhl_verify_hash_callback)
+function collectFiles($dir, $file, $filepath)
 {
+    global $fileList;
 
+    $fileList[] = [
+        'file' => $filepath,
+    ];
+}
+
+function read_dir($dir)
+{
+    $handle = opendir($dir);
+
+    while (($file = readdir($handle)) !== false) {
+
+        if ($file == '.' || $file == '..') {
+            continue;
+        }
+
+        $filepath = $dir . DIRECTORY_SEPARATOR . $file;
+
+        if (is_link($filepath)) {
+            logMessage("Symbolic link detected ({$filepath}). Skipped.");
+            continue;
+        }
+
+        if (is_file($filepath)) {
+            collectFiles($dir, $file, $filepath);
+        } else if (is_dir($filepath)) {
+            read_dir($filepath);
+        }
+    }
+
+    closedir($handle);
 }

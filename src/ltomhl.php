@@ -7,6 +7,7 @@ use function lib\common\printState;
 use function lib\common\printUsage;
 
 require_once('lib/common.php');
+require_once('lib/disk.php');
 
 try {
 
@@ -20,7 +21,9 @@ try {
     loadScanDir();
     printState();
 
-    // loadFileList
+    // load File List
+    loadFileList();
+    echo var_export($fileList, true);
 
     // load mhl
 
