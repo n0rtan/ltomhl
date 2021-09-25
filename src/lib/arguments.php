@@ -12,8 +12,8 @@ use Exception;
 
 require_once('errors.php');
 
-define('ARG_KEY_HELP', 'h');
-define('ARG_KEY_SCAN_DIRECTORY', 'sd');
+define('ARG_KEY_HELP', 'help');
+define('ARG_KEY_SCAN_DIRECTORY', 'scandir');
 define('ARG_KEY_MHL_FILES', 'mhl');
 define('ARG_KEYS', [
     ARG_KEY_HELP,
@@ -56,15 +56,15 @@ function verifyArguments(): void
 
 }
 
-function getMhlFilePath(): string
+function getMhlFilePaths(): array
 {
     global $arguments;
 
-    if (empty($arguments[ARG_KEY_MHL_FILES][0])) {
+    if (empty($arguments[ARG_KEY_MHL_FILES])) {
         throw new Exception('Any MHL is not specified', ERROR_SCAN_DIR_NOT_SPECIFIED);
     }
 
-    return $arguments[ARG_KEY_MHL_FILES][0];
+    return $arguments[ARG_KEY_MHL_FILES];
 }
 
 function getScanDir(): string

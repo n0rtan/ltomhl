@@ -4,11 +4,12 @@ namespace lib\common;
 
 use Exception;
 
-use function lib\arguments\getMhlFilePath;
+use function lib\arguments\getMhlFilePaths;
 use function lib\arguments\getScanDir as ArgumentsGetScanDir;
 
 require_once('arguments.php');
 require_once('disk.php');
+require_once('log.php');
 
 $scanDir = '';
 
@@ -31,7 +32,7 @@ function loadScanDir(): string
             throw $exception;
         }
 
-        $scanDir = dirname(getMhlFilePath());   
+        $scanDir = dirname(getMhlFilePaths()[0]);   
     }
     
     return $scanDir;

@@ -8,6 +8,7 @@ use function lib\common\printUsage;
 
 require_once('lib/common.php');
 require_once('lib/disk.php');
+require_once('lib/mhl.php');
 
 try {
 
@@ -21,11 +22,9 @@ try {
     loadScanDir();
     printState();
 
-    // load File List
     loadFileList();
+    loadMhlFiles();
     echo var_export(getFileList(), true);
-
-    // load mhl
 
     // load/create log
 
@@ -34,5 +33,5 @@ try {
     // make report
 
 } catch (Exception $exception) {
-    echo "Some error occurs: {$exception->getMessage()}";
+    echo "*** Some error occurs: {$exception->getMessage()}\n";
 }
