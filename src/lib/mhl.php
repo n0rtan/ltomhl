@@ -39,7 +39,7 @@ function parseMhl($fileAbsolutePath): bool
             updateFileList($fileAbsolutePath, $data);
         } catch(Exception $exception) {
             logMessage($exception->getMessage());
-            if ($exception->getCode() === ERROR_FILE_NOT_FOUNT_ON_STORAGE) {
+            if ($exception->getCode() === ERROR_FILE_NOT_FOUND_ON_STORAGE) {
                 $isFileNotFoundExists = true;
             }
         }
@@ -60,7 +60,7 @@ function updateFileList($mhlFileAbsolutePath, $data)
     if (!isset($fileList[$relativeFilePath])) {
         throw new Exception(
             "File {$relativeFilePath} not found on storage",
-            ERROR_FILE_NOT_FOUNT_ON_STORAGE
+            ERROR_FILE_NOT_FOUND_ON_STORAGE
         );
     }
 
@@ -71,7 +71,7 @@ function updateFileList($mhlFileAbsolutePath, $data)
         $fileList[$relativeFilePath][$hashType] = $hashValue;
     } catch(Exception $exception) {
 
-        if ($exception->getCode() === ERROR_NO_HASH_FOUNT_IN_MHL) {
+        if ($exception->getCode() === ERROR_NO_HASH_FOUND_IN_MHL) {
             throw new Exception("Error in {$mhlFileAbsolutePath}: {$exception->getMessage()}");
         }
 
@@ -83,17 +83,17 @@ function chooseHash($data): array
 {
     global $hashPriorityList;
 
-    foreach($hashPriorityList as $needed) {
+    foreach($hashPriorityList as $hashType) {
 
-        if (!empty($data->{$needed})) {
+        if (!empty($data->{$hashType})) {
             return [
-                $needed,
-                $data->{$needed} . '',
+                $hashType,
+                $data->{$hashType} . '',
             ];
         }
     }
 
-    throw new Exception("No hash found.", ERROR_NO_HASH_FOUNT_IN_MHL);
+    throw new Exception("No hash found.", ERROR_NO_HASH_FOUND_IN_MHL);
 }
 
 function normalizePath($path)
@@ -152,7 +152,7 @@ function verifyHashes(): int
         try {
             list($hashType, $savedFromMhlHash) = chooseHash((object)$fileData);
         } catch(Exception $exception) {
-            if ($exception->getCode() !== ERROR_NO_HASH_FOUNT_IN_MHL) {
+            if ($exception->getCode() !== ERROR_NO_HASH_FOUND_IN_MHL) {
                 throw $exception;
             }
             $isNonInMhl = true;
