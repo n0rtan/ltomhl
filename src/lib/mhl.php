@@ -83,7 +83,9 @@ function updateFileList($mhlFileAbsolutePath, $data)
     } catch(Exception $exception) {
 
         if ($exception->getCode() === ERROR_NO_HASH_FOUND_IN_MHL) {
-            throw new Exception("Error in {$mhlFileAbsolutePath}: {$exception->getMessage()}");
+            throw new Exception(
+                "Error in {$mhlFileAbsolutePath}: {$exception->getMessage()}"
+            );
         }
 
         throw $exception;
@@ -179,7 +181,7 @@ function verifyHashes(): int
         }        
 
         if ($savedFromMhlHash !== $calculatedHash) {
-            logMessage("Bad hash for file: $filePath");
+            logMessage("Bad hash for file: $filePath; calculated hash: {$calculatedHash}");
         } else {
             logMessage("$filePath OK!");
         }
