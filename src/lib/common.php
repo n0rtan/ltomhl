@@ -9,6 +9,7 @@ use function lib\arguments\getScanDir as ArgumentsGetScanDir;
 
 require_once('arguments.php');
 require_once('disk.php');
+require_once('mhl.php');
 require_once('log.php');
 require_once('console.php');
 require_once('report.php');

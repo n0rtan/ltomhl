@@ -15,8 +15,6 @@ use function lib\print\printUsage;
 use function lib\print\printVersion;
 
 require_once('lib/common.php');
-require_once('lib/disk.php');
-require_once('lib/mhl.php');
 
 try {
 
