@@ -13,6 +13,8 @@ require_once('log.php');
 require_once('console.php');
 require_once('report.php');
 
+$version = '1.0.0';
+
 $scanDir = '';
 
 function getScanDir()
@@ -42,6 +44,9 @@ function loadScanDir(): string
 
 function printUsage()
 {
+    global $version;
+
+    echo "LTO-MHL version: {$version}\n";
     echo "Usage: \n";
     echo "\t-h show this help\n";
     echo "\t-mhl <path_to_mhl_file1> ... <path_to_mhl_fileN> - MHL-files\n";
