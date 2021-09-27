@@ -48,11 +48,10 @@ function verifyArguments(): void
         return;
     }
 
-    $isHelpPassed = isset($arguments[ARG_KEY_HELP]);
     $isScanDirectoryPassed = !empty($arguments[ARG_KEY_SCAN_DIRECTORY]);
     $isMhlFilesPassed = !empty($arguments[ARG_KEY_MHL_FILES]);
     
-    if (!$isScanDirectoryPassed && !$isMhlFilesPassed && !$isHelpPassed) {
+    if (!$isScanDirectoryPassed && !$isMhlFilesPassed) {
         throw new Exception(
             "\n\tNeither the scan dir nor the mhl files is specified.\n" .
             "\tPassed arguments list: \n" . print_r($arguments, true)
