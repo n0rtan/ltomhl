@@ -7,11 +7,11 @@ use SimpleXMLElement;
 
 use function lib\arguments\getMhlFilePaths;
 use function lib\common\getScanDir;
-use function lib\console\consoleWriteMessage;
+use function lib\console\consolePrintMessage;
 use function lib\disk\getFileList;
-use function lib\log\getLastHashedFile;
 use function lib\log\logMessage;
-use function lib\log\logProgress;
+use function progress\progressAdd;
+use function progress\progressGetLastHashedFile;
 
 $hashPriorityList = [
     'xxhash64be',
@@ -48,6 +48,7 @@ function parseMhl($fileAbsolutePath): bool
         try {
             updateFileList($fileAbsolutePath, $data);
         } catch(Exception $exception) {
+            consolePrintMessage($exception->getMessage());
             logMessage($exception->getMessage());
             if ($exception->getCode() === ERROR_FILE_NOT_FOUND_ON_STORAGE) {
                 $isFileNotFoundExists = true;
@@ -147,7 +148,7 @@ function verifyHashes(): int
     $fileList = getFileList();
     $scanDir = getScanDir();
 
-    $lastHashedFile = getLastHashedFile();
+    $lastHashedFile = progressGetLastHashedFile();
     $paused = !empty($lastHashedFile);
         
     foreach($fileList as $filePath => $fileData) {
@@ -161,7 +162,7 @@ function verifyHashes(): int
             }        
         }
 
-        consoleWriteMessage(
+        consolePrintMessage(
             "$filePath [in progress...] ", false
         );
         
@@ -179,22 +180,31 @@ function verifyHashes(): int
         $calculatedHash = calcHash($fileAbsolutePath, $hashType ?? $hashPriorityList[0]);
 
         if ($isNotInMhl) {
-            consoleWriteMessage(
+            consolePrintMessage(
+                "not exists in mhl file. Calculated hash is {$calculatedHash}"
+            );
+            logMessage(
                 "$filePath not exists in mhl file. Calculated hash is {$calculatedHash}"
             );
         } else if ($hashSavedFromMhl !== $calculatedHash) {
-            consoleWriteMessage(
-                "Bad hash for file: $filePath; calculated hash: {$calculatedHash}"
+            consolePrintMessage(
+                "bad hash; calculated: {$calculatedHash}"
+            );
+            logMessage(
+                "Bad hash for file: $filePath; calculated: {$calculatedHash}"
             );
         } else {
-            consoleWriteMessage(
+            consolePrintMessage(
                 "OK!"
+            );
+            logMessage(
+                "$filePath OK!"
             );
         }
 
         $filesProcessed++;
 
-        logProgress($filePath);
+        progressAdd($filePath);
     }
 
     return $filesProcessed;

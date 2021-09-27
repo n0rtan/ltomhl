@@ -8,6 +8,7 @@ use function lib\arguments\getMhlFilePaths;
 use function lib\arguments\getScanDir as ArgumentsGetScanDir;
 
 require_once('arguments.php');
+require_once('progress.php');
 require_once('disk.php');
 require_once('mhl.php');
 require_once('log.php');
