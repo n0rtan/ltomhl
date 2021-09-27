@@ -42,6 +42,8 @@ function consolePrintState()
     "Scan dir: {$scanDir}\n" .
     "----------------------\n";
     consolePrintMessage($str);
+
+    return $str;
 }
 
 function consolePrintDirectoryStats()
@@ -53,4 +55,6 @@ function consolePrintDirectoryStats()
     "----------------------\n";
 
     consolePrintMessage($str);
+    
+    return $str;
 }

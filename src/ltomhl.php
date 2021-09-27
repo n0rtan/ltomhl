@@ -36,7 +36,8 @@ try {
     }
 
     loadScanDir();
-    consolePrintState();
+    $stateMsg = consolePrintState();
+    logMessage($stateMsg);
 
     consolePrintMessage('Loading directory contents...');
     logMessage('Loading directory contents');
@@ -46,7 +47,8 @@ try {
     logMessage('Loading MHL files data');
     loadMhlFiles();
 
-    consolePrintDirectoryStats();
+    $dirStatsMsg = consolePrintDirectoryStats();
+    logMessage($dirStatsMsg);
 
     consolePrintMessage('Init progress');
     logMessage('Init progress');
