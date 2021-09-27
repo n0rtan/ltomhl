@@ -6,7 +6,8 @@ use Exception;
 
 /**
  * arguments list:
- * -sd <scan_dir_path> - scan dir path full
+ * -h help
+ * -scandir <scan_dir_path> - scan dir full path
  * -mhl <mhl1_full_path> <mhl2_full_path> ... - mhl files
  */
 
@@ -32,6 +33,10 @@ function prepareArguments()
 function verifyArguments(): void
 {
     global $arguments;
+
+    if (isset($arguments[ARG_KEY_HELP])) {
+        return;
+    }
 
     $isHelpPassed = isset($arguments[ARG_KEY_HELP]);
     $isScanDirectoryPassed = !empty($arguments[ARG_KEY_SCAN_DIRECTORY]);

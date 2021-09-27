@@ -10,6 +10,8 @@ use function lib\arguments\getScanDir as ArgumentsGetScanDir;
 require_once('arguments.php');
 require_once('disk.php');
 require_once('log.php');
+require_once('console.php');
+require_once('report.php');
 
 $scanDir = '';
 
@@ -40,7 +42,10 @@ function loadScanDir(): string
 
 function printUsage()
 {
-    echo "Usage: ";
+    echo "Usage: \n";
+    echo "\t-h show this help\n";
+    echo "\t-mhl <path_to_mhl_file1> ... <path_to_mhl_fileN> - MHL-files\n";
+    echo "\t-scandir <path_ro_scan_dir> - path to directory with files for scan\n";
 }
 
 function printState()
