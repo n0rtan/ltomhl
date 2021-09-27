@@ -61,10 +61,12 @@ function updateFileList($mhlFileAbsolutePath, $data)
 {
     global $fileList;
 
-    $mhlFileDirName = basename(dirname($mhlFileAbsolutePath));
-    $filePathFromMhl = normalizePath($data->file->__toString());
-
-    $relativeFilePath = $mhlFileDirName . DIRECTORY_SEPARATOR . $filePathFromMhl;
+    $relativeFilePath = normalizePath($data->file->__toString());
+    
+    if (count(getMhlFilePaths()) > 1) {
+        $mhlFileDirName = basename(dirname($mhlFileAbsolutePath));
+        $relativeFilePath = $mhlFileDirName . DIRECTORY_SEPARATOR . $relativeFilePath;
+    }
 
     if (!isset($fileList[$relativeFilePath])) {
         throw new Exception(

@@ -38,7 +38,7 @@ function loadScanDir(): string
             throw $exception;
         }
 
-        $scanDir = dirname(getMhlFilePaths()[0]);   
+        $scanDir = rtrim(dirname(getMhlFilePaths()[0]), DIRECTORY_SEPARATOR);   
     }
     
     return $scanDir;

@@ -2,6 +2,7 @@
 
 namespace lib\disk;
 
+use function lib\arguments\getMhlFilePaths;
 use function lib\common\getScanDir;
 use function lib\log\logMessage;
 
@@ -25,8 +26,17 @@ function collectFiles($dir, $file, $filepath)
 {
     global $fileList;
 
-    $flashDir = substr($dir, strlen(getScanDir())+1);
-    $relativeFilepath = $flashDir . DIRECTORY_SEPARATOR . $file;
+    $relativeFilepath = $file;
+
+    if (count(getMhlFilePaths()) > 1) {
+        $flashDir = substr($dir, strlen(getScanDir()) + 1);
+        $relativeFilepath = $flashDir . DIRECTORY_SEPARATOR . $relativeFilepath;
+    } else {
+        $flashDir = substr($dir, strlen(getScanDir()) + 1);
+        if (strlen($flashDir) > 0) {
+            $relativeFilepath = $flashDir . DIRECTORY_SEPARATOR . $relativeFilepath;
+        }
+    }
 
     $fileList[$relativeFilepath] = [];
 }

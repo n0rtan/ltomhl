@@ -4,6 +4,7 @@ use function lib\arguments\isHelpRequested;
 use function lib\arguments\isVersionRequested;
 use function lib\arguments\prepareArguments;
 use function lib\common\loadScanDir;
+use function lib\disk\getFileList;
 use function lib\disk\loadFileList;
 use function lib\log\loadOrCreateHashingLog;
 use function lib\log\logMessage;
