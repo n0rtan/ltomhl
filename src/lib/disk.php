@@ -10,9 +10,9 @@ $fileList = [];
 
 function loadFileList()
 {
-    $scanDir = getScanDir();
-
-    read_dir($scanDir);
+    read_dir(
+        getScanDir()
+    );
 }
 
 function getFileList()
@@ -22,7 +22,7 @@ function getFileList()
     return $fileList;
 }
 
-function collectFiles($dir, $file, $filepath)
+function collectFiles($dir, $file)
 {
     global $fileList;
 
@@ -59,7 +59,7 @@ function read_dir($dir)
         }
 
         if (is_file($filepath)) {
-            collectFiles($dir, $file, $filepath);
+            collectFiles($dir, $file);
         } else if (is_dir($filepath)) {
             read_dir($filepath);
         }

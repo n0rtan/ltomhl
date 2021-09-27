@@ -7,6 +7,7 @@ use SimpleXMLElement;
 
 use function lib\arguments\getMhlFilePaths;
 use function lib\common\getScanDir;
+use function lib\console\consoleWriteMessage;
 use function lib\disk\getFileList;
 use function lib\log\getLastHashedFile;
 use function lib\log\logMessage;
@@ -159,34 +160,41 @@ function verifyHashes(): int
                 continue;
             }        
         }
+
+        consoleWriteMessage(
+            "$filePath [in progress...] ", false
+        );
         
         $fileAbsolutePath = $scanDir . DIRECTORY_SEPARATOR . $filePath;
-        $isNonInMhl = false;
+        $isNotInMhl = false;
         try {
-            list($hashType, $savedFromMhlHash) = chooseHash((object)$fileData);
+            list($hashType, $hashSavedFromMhl) = chooseHash((object)$fileData);
         } catch(Exception $exception) {
             if ($exception->getCode() !== ERROR_NO_HASH_FOUND_IN_MHL) {
                 throw $exception;
             }
-            $isNonInMhl = true;
+            $isNotInMhl = true;
         }
-
-        logProgress($filePath);
 
         $calculatedHash = calcHash($fileAbsolutePath, $hashType ?? $hashPriorityList[0]);
 
-        if ($isNonInMhl) {
-            logMessage("$filePath not exists in mhl file. Calculated hash is {$calculatedHash}");
-            continue;
-        }        
-
-        if ($savedFromMhlHash !== $calculatedHash) {
-            logMessage("Bad hash for file: $filePath; calculated hash: {$calculatedHash}");
+        if ($isNotInMhl) {
+            consoleWriteMessage(
+                "$filePath not exists in mhl file. Calculated hash is {$calculatedHash}"
+            );
+        } else if ($hashSavedFromMhl !== $calculatedHash) {
+            consoleWriteMessage(
+                "Bad hash for file: $filePath; calculated hash: {$calculatedHash}"
+            );
         } else {
-            logMessage("$filePath OK!");
+            consoleWriteMessage(
+                "OK!"
+            );
         }
 
         $filesProcessed++;
+
+        logProgress($filePath);
     }
 
     return $filesProcessed;
