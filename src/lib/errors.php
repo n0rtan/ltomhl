@@ -1,5 +1,7 @@
 <?php
 
+namespace lib\errors;
+
 define("ERROR_SCAN_DIR_NOT_SPECIFIED", 1);
 define('ERROR_INVALID_ARGUMENTS', 2);
 define('ERROR_NO_HASH_FOUND_IN_MHL', 3);

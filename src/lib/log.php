@@ -1,5 +1,7 @@
 <?php
 
+namespace lib\log;
+
 use function lib\arguments\isResetRequested;
 
 $lastHashedFile = null;

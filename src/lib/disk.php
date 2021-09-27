@@ -1,6 +1,9 @@
 <?php
 
+namespace lib\disk;
+
 use function lib\common\getScanDir;
+use function lib\log\logMessage;
 
 $fileList = [];
 

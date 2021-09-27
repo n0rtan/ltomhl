@@ -1,7 +1,16 @@
 <?php
 
+namespace lib\mhl;
+
+use Exception;
+use SimpleXMLElement;
+
 use function lib\arguments\getMhlFilePaths;
 use function lib\common\getScanDir;
+use function lib\disk\getFileList;
+use function lib\log\getLastHashedFile;
+use function lib\log\logMessage;
+use function lib\log\logProgress;
 
 $hashPriorityList = [
     'xxhash64be',
