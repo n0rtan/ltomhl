@@ -1,11 +1,13 @@
 <?php
 
 use function lib\arguments\isHelpRequested;
+use function lib\arguments\isVersionRequested;
 use function lib\arguments\prepareArguments;
 use function lib\common\loadScanDir;
 use function lib\common\printDirectoryStats;
 use function lib\common\printState;
 use function lib\common\printUsage;
+use function lib\common\printVersion;
 
 require_once('lib/common.php');
 require_once('lib/disk.php');
@@ -17,6 +19,11 @@ try {
 
     if (isHelpRequested()) {
         printUsage();
+        exit;
+    }
+
+    if (isVersionRequested()) {
+        printVersion();
         exit;
     }
 

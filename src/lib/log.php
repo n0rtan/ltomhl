@@ -1,5 +1,7 @@
 <?php
 
+use function lib\arguments\isResetRequested;
+
 $lastHashedFile = null;
 $hashingProgressFileName = '.hashing_progress';
 
@@ -13,6 +15,14 @@ function getLastHashedFile(): ?string
 function loadOrCreateHashingLog()
 {
     global $lastHashedFile, $hashingProgressFileName;
+
+    if (isResetRequested()) {
+        $currentDir = getcwd();
+        $hashingLogFilePath = $currentDir . DIRECTORY_SEPARATOR . $hashingProgressFileName;
+        $hFile = fopen($hashingLogFilePath, 'w');
+        fclose($hFile);
+        return;
+    }
 
     $currentDir = getcwd();
     $hashingLogFilePath = $currentDir . DIRECTORY_SEPARATOR . $hashingProgressFileName;

@@ -6,7 +6,9 @@ use Exception;
 
 /**
  * arguments list:
- * -h help
+ * -help help
+ * -version version
+ * -reset reset progress
  * -scandir <scan_dir_path> - scan dir full path
  * -mhl <mhl1_full_path> <mhl2_full_path> ... - mhl files
  */
@@ -14,12 +16,20 @@ use Exception;
 require_once('errors.php');
 
 define('ARG_KEY_HELP', 'help');
+define('ARG_KEY_VERSION', 'version');
+define('ARG_KEY_RESET', 'reset');
 define('ARG_KEY_SCAN_DIRECTORY', 'scandir');
 define('ARG_KEY_MHL_FILES', 'mhl');
 define('ARG_KEYS', [
     ARG_KEY_HELP,
+    ARG_KEY_RESET,
+    ARG_KEY_VERSION,
     ARG_KEY_SCAN_DIRECTORY,
     ARG_KEY_MHL_FILES,
+]);
+define('ARG_STOP_KEYS', [
+    ARG_KEY_HELP,
+    ARG_KEY_VERSION,
 ]);
 
 $arguments = [];
@@ -34,7 +44,7 @@ function verifyArguments(): void
 {
     global $arguments;
 
-    if (isset($arguments[ARG_KEY_HELP])) {
+    if (array_intersect(ARG_STOP_KEYS, array_keys($arguments))) {
         return;
     }
 
@@ -125,4 +135,18 @@ function isHelpRequested()
     global $arguments;
 
     return isset($arguments[ARG_KEY_HELP]);
+}
+
+function isVersionRequested()
+{
+    global $arguments;
+
+    return isset($arguments[ARG_KEY_VERSION]);
+}
+
+function isResetRequested()
+{
+    global $arguments;
+
+    return isset($arguments[ARG_KEY_RESET]);
 }
