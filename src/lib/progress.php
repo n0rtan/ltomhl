@@ -14,7 +14,7 @@ function progressGetLastHashedFile(): ?string
     return $progressLastHashedFile;
 }
 
-function progressAdd($filePath)
+function progressAdd($filePath): void
 {
     global $progressFileName;
 
@@ -28,7 +28,7 @@ function progressAdd($filePath)
     fclose($hasgingLogFile);
 }
 
-function progressInit()
+function progressInit(): void
 {
     global $progressLastHashedFile, $progressFileName;
 
@@ -39,6 +39,11 @@ function progressInit()
         $hFile = fopen($hashingLogFilePath, 'w');
         fclose($hFile);
         return;
+    }
+
+    if (!file_exists($hashingLogFilePath)) {
+        $hFile = fopen($hashingLogFilePath, 'w+');
+        fclose($hFile);
     }
    
     $data = file($hashingLogFilePath);

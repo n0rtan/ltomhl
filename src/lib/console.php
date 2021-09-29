@@ -2,14 +2,14 @@
 
 namespace lib\console;
 
-function consolePrintMessage($message, $newLine = true)
+function consolePrintMessage($message, $newLine = true): void
 {
     echo $message . ($newLine ? "\n" : '');
 }
 
 use function lib\disk\getFileList;
 
-function consolePrintHelp()
+function consolePrintHelp(): void
 {
     global $version;
 
@@ -24,7 +24,7 @@ function consolePrintHelp()
     consolePrintMessage($str);
 }
 
-function consolePrintVersion()
+function consolePrintVersion(): void
 {
     global $version;
 
@@ -33,7 +33,7 @@ function consolePrintVersion()
     consolePrintMessage($str);
 }
 
-function consolePrintState()
+function consolePrintState(): string
 {
     global $scanDir;
 
@@ -46,7 +46,7 @@ function consolePrintState()
     return $str;
 }
 
-function consolePrintDirectoryStats()
+function consolePrintDirectoryStats(): string
 {
     $fileList = getFileList();
 

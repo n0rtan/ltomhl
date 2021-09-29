@@ -34,7 +34,7 @@ define('ARG_STOP_KEYS', [
 
 $arguments = [];
 
-function prepareArguments()
+function prepareArguments(): void
 {
     readArguments();
     verifyArguments();
@@ -98,7 +98,7 @@ function getScanDir(): string
     return $arguments[ARG_KEY_SCAN_DIRECTORY][0];
 }
 
-function readArguments()
+function readArguments(): array
 {
     global $argv, $arguments;
 
@@ -110,12 +110,14 @@ function readArguments()
         
         $argVal = ltrim($arg, '-');
 
+        // todo: check is key
+
         if (in_array($argVal, ARG_KEYS)) {
             $argType = $argVal;
             $arguments[$argType] = [];
             continue;
-        } 
-            
+        }
+
         if (empty($argType)) {
             throw new Exception(
                 "Invalid arguments: " . var_export($argv, true),
@@ -129,21 +131,21 @@ function readArguments()
     return $arguments;
 }
 
-function isHelpRequested()
+function isHelpRequested(): bool
 {
     global $arguments;
 
     return isset($arguments[ARG_KEY_HELP]);
 }
 
-function isVersionRequested()
+function isVersionRequested(): bool
 {
     global $arguments;
 
     return isset($arguments[ARG_KEY_VERSION]);
 }
 
-function isResetRequested()
+function isResetRequested(): bool
 {
     global $arguments;
 

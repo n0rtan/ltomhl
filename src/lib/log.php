@@ -5,7 +5,10 @@ namespace lib\log;
 $hLogFile = null;
 $logFileName = 'ltomhl.log';
 
-function logOpen()
+/**
+ * Opens log file. Need to use logClose() at the end of programm.
+ */
+function logOpen(): void
 {
     global $hLogFile, $logFileName;
     
@@ -14,14 +17,20 @@ function logOpen()
     $hLogFile = fopen($logFilePath, 'w');
 }
 
-function logClose()
+/**
+ * Closes log file.
+ */
+function logClose(): void
 {
     global $hLogFile;
 
     fclose($hLogFile);
 }
 
-function logMessage($message)
+/**
+ * Writes log message to file.
+ */
+function logMessage($message): void
 {
     global $hLogFile;
 

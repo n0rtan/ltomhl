@@ -16,11 +16,11 @@ require_once('console.php');
 require_once('report.php');
 require_once('print.php');
 
-$version = '1.0.0';
+$version = '1.0.1';
 
 $scanDir = '';
 
-function getScanDir()
+function getScanDir(): string
 {
     global $scanDir;
 

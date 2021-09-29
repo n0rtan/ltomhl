@@ -8,21 +8,21 @@ use function lib\log\logMessage;
 
 $fileList = [];
 
-function loadFileList()
+function loadFileList(): void
 {
     read_dir(
         getScanDir()
     );
 }
 
-function getFileList()
+function getFileList(): array
 {
     global $fileList;
 
     return $fileList;
 }
 
-function collectFiles($dir, $file)
+function collectFiles($dir, $file): void
 {
     global $fileList;
 
@@ -41,7 +41,7 @@ function collectFiles($dir, $file)
     $fileList[$relativeFilepath] = [];
 }
 
-function read_dir($dir)
+function read_dir($dir): void
 {
     $handle = opendir($dir);
 

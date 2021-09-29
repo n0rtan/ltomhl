@@ -21,7 +21,7 @@ $hashPriorityList = [
     'sha1',
 ];
 
-function loadMhlFiles()
+function loadMhlFiles(): void
 {
     $files = getMhlFilePaths();
 
@@ -59,7 +59,7 @@ function parseMhl($fileAbsolutePath): bool
     return $isFileNotFoundExists;
 }
 
-function updateFileList($mhlFileAbsolutePath, $data)
+function updateFileList($mhlFileAbsolutePath, $data): void
 {
     global $fileList;
 
@@ -111,7 +111,7 @@ function chooseHash($data): array
     throw new Exception("No hash found.", ERROR_NO_HASH_FOUND_IN_MHL);
 }
 
-function normalizePath($path)
+function normalizePath($path): string
 {
     $normalized = implode(
         DIRECTORY_SEPARATOR,
