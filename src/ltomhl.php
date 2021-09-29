@@ -14,7 +14,9 @@ use function lib\log\logClose;
 use function lib\log\logMessage;
 use function lib\log\logOpen;
 use function lib\mhl\loadMhlFiles;
+use function lib\mhl\makeMhlFile;
 use function lib\mhl\verifyHashes;
+use function lib\report\makeReport;
 use function progress\progressInit;
 
 require_once('lib/common.php');
@@ -61,8 +63,8 @@ try {
     consolePrintMessage("{$processedCount} files processed.");
     logMessage("{$processedCount} files processed.");
 
-    // make report
-    
+    makeReport();
+    makeMhlFile();   
 
 } catch (Exception $exception) {
     echo "*** Some error occurs: {$exception->getMessage()}\n";

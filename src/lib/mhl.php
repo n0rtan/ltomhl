@@ -10,6 +10,9 @@ use function lib\common\getScanDir;
 use function lib\console\consolePrintMessage;
 use function lib\disk\getFileList;
 use function lib\log\logMessage;
+use function lib\report\addInvalidFile;
+use function lib\report\addNotInMhlFile;
+use function lib\report\addVerifiedFile;
 use function progress\progressAdd;
 use function progress\progressGetLastHashedFile;
 
@@ -52,6 +55,7 @@ function parseMhl($fileAbsolutePath): bool
             logMessage($exception->getMessage());
             if ($exception->getCode() === ERROR_FILE_NOT_FOUND_ON_STORAGE) {
                 $isFileNotFoundExists = true;
+
             }
         }
     }
@@ -177,9 +181,11 @@ function verifyHashes(): int
             $isNotInMhl = true;
         }
 
-        $calculatedHash = calcHash($fileAbsolutePath, $hashType ?? $hashPriorityList[0]);
+        $hashTypeForCalc = $hashType ?? $hashPriorityList[0];
+        $calculatedHash = calcHash($fileAbsolutePath, $hashTypeForCalc);
 
         if ($isNotInMhl) {
+            addNotInMhlFile($filePath, $hashTypeForCalc, $calculatedHash);
             consolePrintMessage(
                 "not exists in mhl file. Calculated hash is {$calculatedHash}"
             );
@@ -187,6 +193,7 @@ function verifyHashes(): int
                 "$filePath not exists in mhl file. Calculated hash is {$calculatedHash}"
             );
         } else if ($hashSavedFromMhl !== $calculatedHash) {
+            addInvalidFile(basename($fileData['mhl_file']), $filePath);
             consolePrintMessage(
                 "bad hash; calculated: {$calculatedHash}"
             );
@@ -194,6 +201,7 @@ function verifyHashes(): int
                 "Bad hash for file: $filePath; calculated: {$calculatedHash}"
             );
         } else {
+            addVerifiedFile(basename($fileData['mhl_file']), $filePath);
             consolePrintMessage(
                 "OK!"
             );
@@ -208,4 +216,33 @@ function verifyHashes(): int
     }
 
     return $filesProcessed;
+}
+
+function makeMhlFile()
+{
+    global $filesNotInMhl, $startTime;
+
+    $startDateTime = date('YmdHi', $startTime);
+
+    $currentDir = getcwd();
+    $reportFilePath = $currentDir . DIRECTORY_SEPARATOR . "nika-{$startDateTime}.mhl";
+
+    $hFile = fopen($reportFilePath, 'w');
+
+    fwrite($hFile, '<?xml version="1.0" encoding="UTF-8"?>
+    <hashlist version="1.1">
+      <creatorinfo>
+        <username>Nika Digital</username>
+        <hostname>SHADED</hostname>
+        <tool>mhl ver. 0.2.0</tool>
+        <startdate>'. date('Y-m-d H:i:s T', $startTime) .'</startdate>
+        <finishdate>'. date('Y-m-d H:i:s T', time()) .'</finishdate>
+      </creatorinfo>
+    ');
+
+    foreach($filesNotInMhl as $filePath => $fileData) {
+        fwrite($hFile, "<hash><file>{$filePath}</file></hash>\n");
+    }
+
+    fclose($hFile);
 }
