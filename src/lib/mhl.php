@@ -244,5 +244,7 @@ function makeMhlFile()
         fwrite($hFile, "<hash><file>{$filePath}</file></hash>\n");
     }
 
+    fwrite($hFile, '</hashlist>');
+
     fclose($hFile);
 }
