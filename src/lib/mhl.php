@@ -9,6 +9,7 @@ use function lib\arguments\getMhlFilePaths;
 use function lib\common\getScanDir;
 use function lib\console\consolePrintMessage;
 use function lib\disk\getFileList;
+use function lib\disk\isMirrorMode;
 use function lib\log\logMessage;
 use function lib\report\addInvalidFile;
 use function lib\report\addNotInMhlFile;
@@ -69,7 +70,7 @@ function updateFileList($mhlFileAbsolutePath, $data): void
 
     $relativeFilePath = normalizePath($data->file->__toString());
     
-    if (count(getMhlFilePaths()) > 1) {
+    if (isMirrorMode()) {
         $mhlFileDirName = basename(dirname($mhlFileAbsolutePath));
         $relativeFilePath = $mhlFileDirName . DIRECTORY_SEPARATOR . $relativeFilePath;
     }

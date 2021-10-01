@@ -3,6 +3,7 @@
 namespace lib\disk;
 
 use function lib\arguments\getMhlFilePaths;
+use function lib\arguments\getScanDir as ArgumentsGetScanDir;
 use function lib\common\getScanDir;
 use function lib\log\logMessage;
 
@@ -22,13 +23,18 @@ function getFileList(): array
     return $fileList;
 }
 
+function isMirrorMode()
+{
+    return count(getMhlFilePaths()) > 1 || !empty(ArgumentsGetScanDir());
+}
+
 function collectFiles($dir, $file): void
 {
     global $fileList;
 
     $relativeFilepath = $file;
 
-    if (count(getMhlFilePaths()) > 1) {
+    if (isMirrorMode()) {
         $flashDir = substr($dir, strlen(getScanDir()) + 1);
         $relativeFilepath = $flashDir . DIRECTORY_SEPARATOR . $relativeFilepath;
     } else {
