@@ -140,9 +140,9 @@ function calcHash($filePath, $hashType): string
     exec("mhl.exe hash -t {$hashType} {$filePath} 2>&1", $output);
     ob_end_clean();
 
-    if (count($output) !== 1) {
+    if (count($output) !== 1 || strpos($output[0], 'sh:') !== false) {
         throw new Exception(
-            "Invalid mhl hash output: \n" . implode("\n", $output),
+            "Invalid mhl hash output: \n\t" . implode("\n", $output),
             ERROR_INVALID_MHL_HASHING_OUTPUT
         );
     }

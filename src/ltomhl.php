@@ -45,6 +45,8 @@ try {
     logMessage('Loading directory contents');
     loadFileList();
 
+    
+
     consolePrintMessage('Loading MHL files data...');
     logMessage('Loading MHL files data');
     loadMhlFiles();
@@ -67,7 +69,7 @@ try {
     makeMhlFile();   
 
 } catch (Exception $exception) {
-    echo "*** Some error occurs: {$exception->getMessage()}\n";
+    echo "\n*** Some error occurs: {$exception->getMessage()}\n";
 } finally {
     logClose();
 }
