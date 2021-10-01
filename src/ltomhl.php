@@ -9,6 +9,7 @@ use function lib\console\consolePrintHelp;
 use function lib\console\consolePrintMessage;
 use function lib\console\consolePrintState;
 use function lib\console\consolePrintVersion;
+use function lib\disk\getFileList;
 use function lib\disk\loadFileList;
 use function lib\log\logClose;
 use function lib\log\logMessage;
@@ -37,13 +38,14 @@ try {
         exit;
     }
 
-    loadScanDir();
     $stateMsg = consolePrintState();
     logMessage($stateMsg);
 
     consolePrintMessage('Loading directory contents...');
     logMessage('Loading directory contents');
     loadFileList();
+
+    echo print_r(getFileList(), true) . "\n";
 
     consolePrintMessage('Loading MHL files data...');
     logMessage('Loading MHL files data');

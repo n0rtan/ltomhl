@@ -5,11 +5,11 @@ namespace lib\mhl;
 use Exception;
 use SimpleXMLElement;
 
+use function lib\arguments\getLocalDir;
 use function lib\arguments\getMhlFilePaths;
-use function lib\common\getScanDir;
+use function lib\arguments\getScanDir;
 use function lib\console\consolePrintMessage;
 use function lib\disk\getFileList;
-use function lib\disk\isMirrorMode;
 use function lib\log\logMessage;
 use function lib\report\addInvalidFile;
 use function lib\report\addNotInMhlFile;
@@ -31,8 +31,8 @@ function loadMhlFiles(): void
 
     $isFileNotFoundExists = false;
 
-    foreach($files as $fileAbsolutePath) {
-        if (parseMhl($fileAbsolutePath)) {
+    foreach($files as $mhlFileAbsolutePath) {
+        if (parseMhl($mhlFileAbsolutePath)) {
             $isFileNotFoundExists = true;
         }
     }
@@ -42,21 +42,20 @@ function loadMhlFiles(): void
     }
 }
 
-function parseMhl($fileAbsolutePath): bool
+function parseMhl($mhlFileAbsolutePath): bool
 {
-    $hashlist = new SimpleXMLElement(file_get_contents($fileAbsolutePath));
+    $hashlist = new SimpleXMLElement(file_get_contents($mhlFileAbsolutePath));
     
     $isFileNotFoundExists = false;
 
     foreach($hashlist->hash as $data) {
         try {
-            updateFileList($fileAbsolutePath, $data);
+            updateFileList($mhlFileAbsolutePath, $data);
         } catch(Exception $exception) {
             consolePrintMessage($exception->getMessage());
             logMessage($exception->getMessage());
             if ($exception->getCode() === ERROR_FILE_NOT_FOUND_ON_STORAGE) {
                 $isFileNotFoundExists = true;
-
             }
         }
     }
@@ -68,25 +67,31 @@ function updateFileList($mhlFileAbsolutePath, $data): void
 {
     global $fileList;
 
-    $relativeFilePath = normalizePath($data->file->__toString());
-    
-    if (isMirrorMode()) {
-        $mhlFileDirName = basename(dirname($mhlFileAbsolutePath));
-        $relativeFilePath = $mhlFileDirName . DIRECTORY_SEPARATOR . $relativeFilePath;
+    if (strpos($mhlFileAbsolutePath, getLocalDir()) === false) { // todo: move to varifyArgs
+        throw new Exception(
+            "File {$mhlFileAbsolutePath} does not contain local path",
+            ERROR_INVALID_MHL_PATH
+        );
     }
 
-    if (!isset($fileList[$relativeFilePath])) {
+    $fileRelativePath = normalizePath($data->file->__toString());
+
+    $localToScanPath = getScanDir() .  normalizePath(dirname(str_replace(getLocalDir(), '', $mhlFileAbsolutePath)));
+
+    $index = $localToScanPath . DIRECTORY_SEPARATOR . $fileRelativePath;
+
+    if (!isset($fileList[$index])) {
         throw new Exception(
-            "File {$relativeFilePath} not found on storage",
+            "File {$index} not found on storage",
             ERROR_FILE_NOT_FOUND_ON_STORAGE
         );
     }
 
     try {
-        $fileList[$relativeFilePath]['mhl_file'] = $mhlFileAbsolutePath;
+        $fileList[$index]['mhl_file'] = $mhlFileAbsolutePath;
 
         list($hashType, $hashValue) = chooseHash($data);
-        $fileList[$relativeFilePath][$hashType] = $hashValue;
+        $fileList[$index][$hashType] = $hashValue;
     } catch(Exception $exception) {
 
         if ($exception->getCode() === ERROR_NO_HASH_FOUND_IN_MHL) {
@@ -156,10 +161,10 @@ function verifyHashes(): int
     $lastHashedFile = progressGetLastHashedFile();
     $paused = !empty($lastHashedFile);
         
-    foreach($fileList as $filePath => $fileData) {
+    foreach($fileList as $fileAbsolutePath => $fileData) {
 
         if ($paused) {
-            if ($lastHashedFile !== $filePath) {
+            if ($lastHashedFile !== $fileAbsolutePath) {
                 continue;
             } else {
                 $paused = false;
@@ -168,11 +173,11 @@ function verifyHashes(): int
         }
 
         consolePrintMessage(
-            "$filePath [in progress...] ", false
+            "$fileAbsolutePath [in progress...] ", false
         );
         
-        $fileAbsolutePath = $scanDir . DIRECTORY_SEPARATOR . $filePath;
         $isNotInMhl = false;
+
         try {
             list($hashType, $hashSavedFromMhl) = chooseHash((object)$fileData);
         } catch(Exception $exception) {
@@ -186,34 +191,34 @@ function verifyHashes(): int
         $calculatedHash = calcHash($fileAbsolutePath, $hashTypeForCalc);
 
         if ($isNotInMhl) {
-            addNotInMhlFile($filePath, $hashTypeForCalc, $calculatedHash);
+            addNotInMhlFile($fileAbsolutePath, $hashTypeForCalc, $calculatedHash);
             consolePrintMessage(
                 "not exists in mhl file. Calculated hash is {$calculatedHash}"
             );
             logMessage(
-                "$filePath not exists in mhl file. Calculated hash is {$calculatedHash}"
+                "$fileAbsolutePath not exists in mhl file. Calculated hash is {$calculatedHash}"
             );
         } else if ($hashSavedFromMhl !== $calculatedHash) {
-            addInvalidFile(basename($fileData['mhl_file']), $filePath);
+            addInvalidFile(basename($fileData['mhl_file']), $fileAbsolutePath);
             consolePrintMessage(
                 "bad hash; calculated: {$calculatedHash}"
             );
             logMessage(
-                "Bad hash for file: $filePath; calculated: {$calculatedHash}"
+                "Bad hash for file: $fileAbsolutePath; calculated: {$calculatedHash}"
             );
         } else {
-            addVerifiedFile(basename($fileData['mhl_file']), $filePath);
+            addVerifiedFile(basename($fileData['mhl_file']), $fileAbsolutePath);
             consolePrintMessage(
                 "OK!"
             );
             logMessage(
-                "$filePath OK!"
+                "$fileAbsolutePath OK!"
             );
         }
 
         $filesProcessed++;
 
-        progressAdd($filePath);
+        progressAdd($fileAbsolutePath);
     }
 
     return $filesProcessed;

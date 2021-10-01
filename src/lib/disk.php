@@ -2,10 +2,10 @@
 
 namespace lib\disk;
 
-use function lib\arguments\getMhlFilePaths;
-use function lib\arguments\getScanDir as ArgumentsGetScanDir;
-use function lib\common\getScanDir;
+use function lib\arguments\getLocalDir;
+use function lib\arguments\getScanDir;
 use function lib\log\logMessage;
+use function lib\mhl\normalizePath;
 
 $fileList = [];
 
@@ -23,28 +23,13 @@ function getFileList(): array
     return $fileList;
 }
 
-function isMirrorMode()
-{
-    return count(getMhlFilePaths()) > 1 || !empty(ArgumentsGetScanDir());
-}
-
 function collectFiles($dir, $file): void
 {
     global $fileList;
 
-    $relativeFilepath = $file;
+    $index = normalizePath($dir) . DIRECTORY_SEPARATOR . $file;
 
-    if (isMirrorMode()) {
-        $flashDir = substr($dir, strlen(getScanDir()) + 1);
-        $relativeFilepath = $flashDir . DIRECTORY_SEPARATOR . $relativeFilepath;
-    } else {
-        $flashDir = substr($dir, strlen(getScanDir()) + 1);
-        if (strlen($flashDir) > 0) {
-            $relativeFilepath = $flashDir . DIRECTORY_SEPARATOR . $relativeFilepath;
-        }
-    }
-
-    $fileList[$relativeFilepath] = [];
+    $fileList[$index] = [];
 }
 
 function read_dir($dir): void

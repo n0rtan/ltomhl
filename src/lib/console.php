@@ -8,6 +8,7 @@ function consolePrintMessage($message, $newLine = true): void
 }
 
 use function lib\disk\getFileList;
+use function lib\arguments\getScanDir;
 
 function consolePrintHelp(): void
 {
@@ -35,7 +36,7 @@ function consolePrintVersion(): void
 
 function consolePrintState(): string
 {
-    global $scanDir;
+    $scanDir = getScanDir();
 
     $str = "----------------------\n".
     "Current directory: " . getcwd() . "\n".
