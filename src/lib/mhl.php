@@ -192,10 +192,10 @@ function verifyHashes(): int
         if ($isNotInMhl) {
             addNotInMhlFile($fileAbsolutePath, $hashTypeForCalc, $calculatedHash);
             consolePrintMessage(
-                "not exists in mhl file. Calculated hash is {$calculatedHash}"
+                "not exists in mhl file. Calculated hash is {$calculatedHash} of type {$hashTypeForCalc}"
             );
             logMessage(
-                "$fileAbsolutePath not exists in mhl file. Calculated hash is {$calculatedHash}"
+                "$fileAbsolutePath not exists in mhl file. Calculated hash is {$calculatedHash} of type {$hashTypeForCalc}"
             );
         } else if ($hashSavedFromMhl !== $calculatedHash) {
             addInvalidFile(basename($fileData['mhl_file']), $fileAbsolutePath);
