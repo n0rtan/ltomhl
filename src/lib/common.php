@@ -16,7 +16,7 @@ require_once('console.php');
 require_once('report.php');
 require_once('print.php');
 
-$version = '1.1.1';
+$version = '1.1.2';
 
 $scanDir = '';
 
