@@ -135,7 +135,7 @@ function normalizePath($path): string
 function calcHash($filePath, $hashType): string
 {
     ob_start();
-    exec("mhl hash -t {$hashType} {$filePath} 2>&1", $output);
+    exec("mhl hash -t {$hashType} \"{$filePath}\" 2>&1", $output);
     ob_end_clean();
 
     if (count($output) !== 1 || strpos($output[0], 'sh:') !== false) {
