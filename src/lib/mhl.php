@@ -150,7 +150,7 @@ function calcHash($filePath, $hashType): string
 
 function verifyHashes(): int
 {
-    global $hashPriorityList;
+    global $hashPriorityList, $filesCount;
 
     $filesProcessed = 0;
     $fileList = getFileList();
@@ -172,7 +172,7 @@ function verifyHashes(): int
         }
 
         consolePrintMessage(
-            "{$i}: $fileAbsolutePath [in progress...] ", false
+            "$i/$filesCount: $fileAbsolutePath [in progress...] ", false
         );
         
         $isNotInMhl = false;
@@ -236,21 +236,21 @@ function makeMhlFile()
     $hFile = fopen($reportFilePath, 'w');
 
     fwrite($hFile, '<?xml version="1.0" encoding="UTF-8"?>
-    <hashlist version="1.1">
-      <creatorinfo>
-        <username>Nika Digital</username>
-        <hostname>SHADED</hostname>
-        <tool>mhl ver. 0.2.0</tool>
-        <startdate>'. date('Y-m-d H:i:s T', $startTime) .'</startdate>
-        <finishdate>'. date('Y-m-d H:i:s T', time()) .'</finishdate>
-      </creatorinfo>
+  <hashlist version="1.1">
+    <creatorinfo>
+      <username>Nika Digital</username>
+      <hostname>'. gethostname() .'</hostname>
+      <tool>mhl ver. 0.2.0</tool>
+      <startdate>'. date('Y-m-d H:i:s T', $startTime) .'</startdate>
+      <finishdate>'. date('Y-m-d H:i:s T', time()) .'</finishdate>
+    </creatorinfo>
     ');
 
     foreach($filesNotInMhl as $filePath => $fileData) {
-        fwrite($hFile, "<hash><file>{$filePath}</file></hash>\n");
+        fwrite($hFile, "\n    <hash><file>{$filePath}</file></hash>");
     }
 
-    fwrite($hFile, '</hashlist>');
+    fwrite($hFile, "\n</hashlist>");
 
     fclose($hFile);
 }

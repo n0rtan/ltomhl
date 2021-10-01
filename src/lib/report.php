@@ -59,17 +59,42 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
     <head>
         <style>
 
+            body {
+                background-color: #181818;
+                font-size: 12px;
+                font-family: monospace;
+                color: #ababab;
+                margin: 5px 3px;
+            }
+
             .caption {
-                font-size: 18px;
                 font-weight: bold;
-                background-color: #6814ad;
-                color: white;
-                padding: 5px;
+                background-color: hsl(0deg 0% 20%);
+                border-radius: 4px;
+                color: #d9d9d9;
+                padding: 1px 5px;
+                text-shadow: 1px 1px #181818;
             }
 
             .line {
-                padding: 3px;
+                padding: 2px 2px 2px 5px;
             }
+
+
+            .collapsible {
+                color: white;
+                cursor: pointer;
+                width: 100%;
+                border: none;
+                text-align: left;
+                outline: none;
+                margin: 3px 1px;
+              }
+              
+              .content {
+                display: block;
+                overflow: hidden;
+              }
 
         </style>
 
@@ -77,7 +102,7 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
     </head>
     <body>\n");
 
-    fwrite($hFile, "<div class='caption'>Valid files:</div>\n");
+    fwrite($hFile, "\n<div class='caption collapsible active' type='button'>Valid files:</div>\n<div class='content'>");
 
     if (isset($progress['valid'])) {
         foreach($progress['valid'] as $filePath => $fileData) {
@@ -85,7 +110,7 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
         }
     }
 
-    fwrite($hFile, "<div class='caption'>Invalid files:</div>\n");
+    fwrite($hFile, "\n</div>\n<div class='caption collapsible active' type='button'>Invalid files:</div>\n<div class='content'>\n");
 
     if (isset($progress['invalid'])) {
         foreach($progress['invalid'] as $filePath => $fileData) {
@@ -93,8 +118,24 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
         }
     }
 
-    fwrite($hFile, "\n</body>
-    </html>");
+    fwrite($hFile, "\n</div>\n " . 
+    '<script>
+    var coll = document.getElementsByClassName("collapsible");
+    var i;
+    
+    for (i = 0; i < coll.length; i++) {
+      coll[i].addEventListener("click", function() {
+        var content = this.nextElementSibling;
+        if (content.style.display === "none") {
+          content.style.display = "block";
+        } else {
+          content.style.display = "none";
+        }
+      });
+    }
+    </script>
+    </body>
+    </html>');
 
     fclose($hFile);
 }

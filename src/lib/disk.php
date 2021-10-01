@@ -2,18 +2,22 @@
 
 namespace lib\disk;
 
-use function lib\arguments\getLocalDir;
 use function lib\arguments\getScanDir;
 use function lib\log\logMessage;
 use function lib\mhl\normalizePath;
 
 $fileList = [];
+$filesCount = 0;
 
 function loadFileList(): void
 {
+    global $fileList, $filesCount;
+
     read_dir(
         getScanDir()
     );
+
+    $filesCount = count($fileList);
 }
 
 function getFileList(): array
