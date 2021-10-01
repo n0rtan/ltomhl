@@ -128,10 +128,10 @@ function normalizePath($path): string
         explode('/', $path)
     );
 
-    return implode(
+    return rtrim(implode(
         DIRECTORY_SEPARATOR,
         explode('\\', $normalized)
-    );    
+    ), DIRECTORY_SEPARATOR);    
 }
 
 function calcHash($filePath, $hashType): string
@@ -156,7 +156,6 @@ function verifyHashes(): int
 
     $filesProcessed = 0;
     $fileList = getFileList();
-    $scanDir = getScanDir();
 
     $lastHashedFile = progressGetLastHashedFile();
     $paused = !empty($lastHashedFile);
