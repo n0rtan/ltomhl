@@ -45,8 +45,6 @@ try {
     logMessage('Loading directory contents');
     loadFileList();
 
-    echo print_r(getFileList(), true) . "\n";
-
     consolePrintMessage('Loading MHL files data...');
     logMessage('Loading MHL files data');
     loadMhlFiles();
