@@ -45,8 +45,6 @@ try {
     logMessage('Loading directory contents');
     loadFileList();
 
-    
-
     consolePrintMessage('Loading MHL files data...');
     logMessage('Loading MHL files data');
     loadMhlFiles();

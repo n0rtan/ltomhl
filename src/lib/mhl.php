@@ -123,14 +123,12 @@ function chooseHash($data): array
 
 function normalizePath($path): string
 {
-    $normalized = implode(
-        DIRECTORY_SEPARATOR,
-        explode('/', $path)
-    );
-
     return rtrim(implode(
         DIRECTORY_SEPARATOR,
-        explode('\\', $normalized)
+        explode('\\', implode(
+            DIRECTORY_SEPARATOR,
+            explode('/', $path)
+        ))
     ), DIRECTORY_SEPARATOR);    
 }
 
@@ -159,7 +157,9 @@ function verifyHashes(): int
 
     $lastHashedFile = progressGetLastHashedFile();
     $paused = !empty($lastHashedFile);
-        
+    
+    $i = 1;
+
     foreach($fileList as $fileAbsolutePath => $fileData) {
 
         if ($paused) {
@@ -172,7 +172,7 @@ function verifyHashes(): int
         }
 
         consolePrintMessage(
-            "$fileAbsolutePath [in progress...] ", false
+            "{$i}: $fileAbsolutePath [in progress...] ", false
         );
         
         $isNotInMhl = false;
@@ -216,6 +216,7 @@ function verifyHashes(): int
         }
 
         $filesProcessed++;
+        $i++;
 
         progressAdd($fileAbsolutePath);
     }

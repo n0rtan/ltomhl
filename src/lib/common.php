@@ -13,4 +13,4 @@ require_once('console.php');
 require_once('report.php');
 require_once('print.php');
 
-$version = '1.2.3';
+$version = '1.2.4';
