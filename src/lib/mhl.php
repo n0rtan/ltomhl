@@ -28,11 +28,9 @@ $hashPriorityList = [
 
 function loadMhlFiles(): void
 {
-    $files = getMhlFilePaths();
-
     $isFileNotFoundExists = false;
 
-    foreach($files as $mhlFileAbsolutePath) {
+    foreach(getMhlFilePaths() as $mhlFileAbsolutePath) {
         if (parseMhl($mhlFileAbsolutePath)) {
             $isFileNotFoundExists = true;
         }
@@ -167,14 +165,12 @@ function verifyHashes(): int
     foreach($fileList as $fileAbsolutePath => $fileData) {
 
         if ($paused) {
+            $filesProcessed++;
+            $i++;
             if ($lastHashedFile !== $fileAbsolutePath) {
-                $filesProcessed++;
-                $i++;
                 continue;
             } else {
                 $paused = false;
-                $filesProcessed++;
-                $i++;
                 continue;
             }        
         }

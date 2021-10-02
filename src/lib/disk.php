@@ -3,13 +3,53 @@
 namespace lib\disk;
 
 use function lib\arguments\getScanDir;
+use function lib\arguments\isResetRequested;
 use function lib\log\logMessage;
+use function lib\mhl\getNewFileNamePrefix;
 use function lib\mhl\normalizePath;
 
 $fileList = [];
 $filesCount = 0;
 
-function loadFileList(): void
+$fileListBaseFileName = 'filelist';
+
+function getFileListFilePath()
+{
+    return getcwd() . DIRECTORY_SEPARATOR . getFileListFileName();
+}
+
+function getFileListFileName()
+{
+    global $fileListBaseFileName;
+
+    return '.' . getNewFileNamePrefix() . '_' . $fileListBaseFileName;
+}
+
+function loadFileList(): bool
+{
+    global $fileList;
+
+    $filePath = getFileListFilePath();
+
+    if (isResetRequested()) {
+        $hfile = fopen($filePath, 'w');
+        fclose($hfile);
+    } else if (is_readable($filePath)) {
+        $fileList = json_decode(file_get_contents($filePath), true);
+    }
+
+    return count($fileList) > 0;
+}
+
+function saveFileList(): void
+{
+    file_put_contents(
+        getFileListFilePath(),
+        json_encode(getFileList())
+    );
+}
+
+function readFileList(): void
 {
     global $fileList, $filesCount;
 

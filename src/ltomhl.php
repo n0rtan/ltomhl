@@ -9,6 +9,8 @@ use function lib\console\consolePrintMessage;
 use function lib\console\consolePrintState;
 use function lib\console\consolePrintVersion;
 use function lib\disk\loadFileList;
+use function lib\disk\readFileList;
+use function lib\disk\saveFileList;
 use function lib\log\logClose;
 use function lib\log\logMessage;
 use function lib\log\logOpen;
@@ -41,19 +43,23 @@ try {
     $stateMsg = consolePrintState();
     logMessage($stateMsg);
 
-    consolePrintMessage('Loading directory contents...');
-    logMessage('Loading directory contents');
-    loadFileList();
+    consolePrintMessage('Loading file list...');
+    logMessage('Loading file list');
 
-    consolePrintMessage('Loading MHL files data...');
-    logMessage('Loading MHL files data');
-    loadMhlFiles();
+    if (!loadFileList()) {
+        consolePrintMessage('Reading directory contents...');
+        logMessage('Reading directory contents');
+        readFileList();
+
+        consolePrintMessage('Loading MHL files data...');
+        logMessage('Loading MHL files data');
+        loadMhlFiles();
+        saveFileList();
+    }
 
     $dirStatsMsg = consolePrintDirectoryStats();
     logMessage($dirStatsMsg);
 
-    consolePrintMessage('Init progress');
-    logMessage('Init progress');
     progressInit();
 
     consolePrintMessage('Verifying...');
@@ -64,7 +70,7 @@ try {
     logMessage("{$processedCount} files processed. " . getInvalidFilesCount() . ' files are invalid.');
 
     makeReport();
-    makeMhlFile();   
+    makeMhlFile();
 
 } catch (Exception $exception) {
     echo "\n*** Some error occurs: {$exception->getMessage()}\n";

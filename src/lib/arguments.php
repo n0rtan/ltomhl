@@ -4,15 +4,6 @@ namespace lib\arguments;
 
 use Exception;
 
-/**
- * arguments list:
- * -help help
- * -version version
- * -reset reset progress
- * -scandir <scan_dir_path> - scan dir full path
- * -mhl <mhl1_full_path> <mhl2_full_path> ... - mhl files
- */
-
 require_once('errors.php');
 
 define('ARG_KEY_HELP', 'help');

@@ -39,7 +39,7 @@ function consolePrintState(): string
 {
     $scanDir = getScanDir();
 
-    $str = "----------------------\n".
+    $str = "\n----------------------\n".
     "Current directory: " . getcwd() . "\n".
     "Scan dir: {$scanDir}\n" .
     "----------------------\n";

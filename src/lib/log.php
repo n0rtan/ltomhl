@@ -19,7 +19,7 @@ function logOpen(): void
 {
     global $hLogFile, $logFileName;
     
-    $hLogFile = fopen($logFileName, 'w');
+    $hLogFile = fopen($logFileName, 'a');
 }
 
 /**
