@@ -22,12 +22,14 @@ function getProgressFileName()
     return '.' . getNewFileNamePrefix() . '_' . $progressFileBaseName;
 }
 
-function progressAdd($filePath): void
+function getProgressfilePath()
 {
-    $progressFileName = getProgressFileName();
-    $progressFilePath = getcwd() . DIRECTORY_SEPARATOR . $progressFileName;
+    return getcwd() . DIRECTORY_SEPARATOR . getProgressFileName();
+}
 
-    $hasgingLogFile = fopen($progressFilePath, 'a+');
+function progressAdd($filePath): void
+{ 
+    $hasgingLogFile = fopen(getProgressfilePath(), 'a+');
 
     fwrite($hasgingLogFile, $filePath . PHP_EOL);
 
@@ -38,8 +40,7 @@ function progressInit(): void
 {
     global $progressLastHashedFile;
 
-    $progressFileName = getProgressFileName();
-    $progressFilePath = getcwd() . DIRECTORY_SEPARATOR . $progressFileName;
+    $progressFilePath = getProgressfilePath();
 
     if (isResetRequested()) {
         $hFile = fopen($progressFilePath, 'w');
