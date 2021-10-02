@@ -5,9 +5,24 @@ namespace lib\report;
 $filesNotInMhl = [];
 
 $filesProcessed = [];
+$invalidFilesCount = 0;
+$validFilesCount = 0;
 
 $startTime = time();
 
+function getInvalidFilesCount()
+{
+    global $invalidFilesCount;
+
+    return $invalidFilesCount;
+}
+
+function getValidFilesCount()
+{
+    global $validFilesCount;
+
+    return $validFilesCount;
+}
 
 function addNotInMhlFile($filePath, $hashType, $hashVal): void
 {
@@ -20,16 +35,18 @@ function addNotInMhlFile($filePath, $hashType, $hashVal): void
 
 function addVerifiedFile($mhl, $filePath): void
 {
-    global $filesProcessed;
+    global $filesProcessed, $validFilesCount;
 
     $filesProcessed[$mhl]['valid'][$filePath] = [];
+    $validFilesCount = count($filesProcessed[$mhl]['valid']);
 }
 
 function addInvalidFile($mhl, $filePath): void
 {
-    global $filesProcessed;
+    global $filesProcessed, $invalidFilesCount;
 
     $filesProcessed[$mhl]['invalid'][$filePath] = [];
+    $invalidFilesCount = count($filesProcessed[$mhl]['invalid']);
 }
 
 function makeReport()
@@ -46,7 +63,7 @@ function makeReport()
 
 function makeReportFromExistHhl($reportFileName, $mhlName)
 {
-    global $filesProcessed;
+    global $filesProcessed, $invalidFilesCount, $validFilesCount;
 
     $currentDir = getcwd();
     $reportFilePath = $currentDir . DIRECTORY_SEPARATOR . $reportFileName;
@@ -102,21 +119,21 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
     </head>
     <body>\n");
 
-    fwrite($hFile, "\n<div class='caption collapsible active' type='button'>Valid files:</div>\n<div class='content'>");
-
-    if (isset($progress['valid'])) {
-        foreach($progress['valid'] as $filePath => $fileData) {
-            fwrite($hFile, "<div class='line'>{$filePath}</div>\n");
-        }
-    }
-
-    fwrite($hFile, "\n</div>\n<div class='caption collapsible active' type='button'>Invalid files:</div>\n<div class='content'>\n");
+    fwrite($hFile, "\n</div>\n<div class='caption collapsible active' type='button'>Invalid files ({$invalidFilesCount}):</div>\n<div class='content'>\n");
 
     if (isset($progress['invalid'])) {
         foreach($progress['invalid'] as $filePath => $fileData) {
             fwrite($hFile, "<div class='line'>{$filePath}</div>\n");
         }
     }
+
+    fwrite($hFile, "\n<div class='caption collapsible active' type='button'>Valid files ({$validFilesCount}):</div>\n<div class='content'>");
+
+    if (isset($progress['valid'])) {
+        foreach($progress['valid'] as $filePath => $fileData) {
+            fwrite($hFile, "<div class='line'>{$filePath}</div>\n");
+        }
+    }   
 
     fwrite($hFile, "\n</div>\n " . 
     '<script>

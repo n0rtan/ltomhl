@@ -17,6 +17,7 @@ use function lib\log\logOpen;
 use function lib\mhl\loadMhlFiles;
 use function lib\mhl\makeMhlFile;
 use function lib\mhl\verifyHashes;
+use function lib\report\getInvalidFilesCount;
 use function lib\report\makeReport;
 use function progress\progressInit;
 
@@ -60,8 +61,8 @@ try {
     logMessage('Verifying...');
     $processedCount = verifyHashes();
 
-    consolePrintMessage("{$processedCount} files processed.");
-    logMessage("{$processedCount} files processed.");
+    consolePrintMessage("{$processedCount} files processed. " . getInvalidFilesCount() . ' files invalid.');
+    logMessage("{$processedCount} files processed. " . getInvalidFilesCount() . ' files are invalid.');
 
     makeReport();
     makeMhlFile();   

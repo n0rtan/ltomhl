@@ -14,6 +14,7 @@ use function lib\log\logMessage;
 use function lib\report\addInvalidFile;
 use function lib\report\addNotInMhlFile;
 use function lib\report\addVerifiedFile;
+use function lib\report\getInvalidFilesCount;
 use function progress\progressAdd;
 use function progress\progressGetLastHashedFile;
 
@@ -170,9 +171,11 @@ function verifyHashes(): int
                 continue;
             }        
         }
+        
+        $invalidFilesCountString = getInvalidFilesCount() ? '(' . getInvalidFilesCount() . ')' : '';
 
         consolePrintMessage(
-            "$i/$filesCount: $fileAbsolutePath [in progress...] ", false
+            "{$i}{$invalidFilesCountString}/$filesCount: $fileAbsolutePath [in progress...] ", false
         );
         
         $isNotInMhl = false;
