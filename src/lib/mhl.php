@@ -168,6 +168,8 @@ function verifyHashes(): int
 
         if ($paused) {
             if ($lastHashedFile !== $fileAbsolutePath) {
+                $filesProcessed++;
+                $i++;
                 continue;
             } else {
                 $paused = false;
@@ -195,8 +197,16 @@ function verifyHashes(): int
         $hashTypeForCalc = $hashType ?? $hashPriorityList[0];
         $calculatedHash = calcHash($fileAbsolutePath, $hashTypeForCalc);
 
+        $result = [];
+
         if ($isNotInMhl) {
             addNotInMhlFile($fileAbsolutePath, $hashTypeForCalc, $calculatedHash);
+            $result = [
+                'type' => 'not_in_mhl',
+                'fileAbsolutePath' => $fileAbsolutePath,
+                'validHashType' => $hashTypeForCalc,
+                'validHashValue'=> $calculatedHash,
+            ];
             consolePrintMessage(
                 "not exists in mhl file. Calculated hash is {$calculatedHash} of type {$hashTypeForCalc}"
             );
@@ -205,6 +215,13 @@ function verifyHashes(): int
             );
         } else if ($hashSavedFromMhl !== $calculatedHash) {
             addInvalidFile(basename($fileData['mhl_file']), $fileAbsolutePath, $hashType, $hashSavedFromMhl);
+            $result = [
+                'type' => 'invalid',
+                'mhl_file' => basename($fileData['mhl_file']),
+                'fileAbsolutePath' => $fileAbsolutePath,
+                'validHashType' => $hashType,
+                'validHashValue'=> $hashSavedFromMhl,
+            ];
             consolePrintMessage(
                 "bad hash; calculated: {$calculatedHash}"
             );
@@ -213,6 +230,11 @@ function verifyHashes(): int
             );
         } else {
             addVerifiedFile(basename($fileData['mhl_file']), $fileAbsolutePath);
+            $result = [
+                'type' => 'valid',
+                'mhl_file' => basename($fileData['mhl_file']),
+                'fileAbsolutePath' => $fileAbsolutePath,
+            ];
             consolePrintMessage(
                 "OK!"
             );
@@ -224,7 +246,7 @@ function verifyHashes(): int
         $filesProcessed++;
         $i++;
 
-        progressAdd($fileAbsolutePath);
+        progressAdd($fileAbsolutePath, $result);
     }
 
     return $filesProcessed;
