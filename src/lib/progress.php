@@ -3,6 +3,8 @@
 namespace progress;
 
 use function lib\arguments\isResetRequested;
+use function lib\console\consolePrintMessage;
+use function lib\log\logMessage;
 use function lib\mhl\getNewFileNamePrefix;
 use function lib\report\addInvalidFile;
 use function lib\report\addNotInMhlFile;
@@ -65,6 +67,13 @@ function progressInit(): void
 
     $lastFile = null;
 
+    $fileInfo = fstat($progressFile);
+
+    if (!empty($fileInfo['size'])) {
+        consolePrintMessage('Loading progress...');
+        logMessage('Loading progress...');
+    }
+
     while (($line = fgets($progressFile)) !== false) {
         $data = json_decode($line, true);
         $lastFile = $data['file'];
@@ -72,6 +81,11 @@ function progressInit(): void
     }
 
     $progressLastHashedFile = $lastFile;
+
+    if (!empty($progressLastHashedFile)) {
+        consolePrintMessage("Last verified file: {$progressLastHashedFile}");
+        logMessage("Last verified file: {$progressLastHashedFile}");
+    }
 }
 
 function loadProgressByFile($result): void
