@@ -42,7 +42,7 @@ function read_dir($dir): void
 
     while (($file = readdir($handle)) !== false) {
 
-        if ($file == '.' || $file == '..') {
+        if (preg_match('#^\.#', $file)) {
             continue;
         }
 

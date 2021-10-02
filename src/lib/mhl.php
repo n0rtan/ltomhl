@@ -75,6 +75,10 @@ function updateFileList($mhlFileAbsolutePath, $data): void
         );
     }
 
+    if (preg_match('#^\.#', basename($data->file->__toString()))) {
+        return;
+    }
+
     $fileRelativePath = normalizePath($data->file->__toString());
 
     $localToScanPath = getScanDir() .  normalizePath(dirname(str_replace(getLocalDir(), '', $mhlFileAbsolutePath)));
@@ -201,7 +205,7 @@ function verifyHashes(): int
                 "$fileAbsolutePath not exists in mhl file. Calculated hash is {$calculatedHash} of type {$hashTypeForCalc}"
             );
         } else if ($hashSavedFromMhl !== $calculatedHash) {
-            addInvalidFile(basename($fileData['mhl_file']), $fileAbsolutePath);
+            addInvalidFile(basename($fileData['mhl_file']), $fileAbsolutePath, $hashType, $hashSavedFromMhl);
             consolePrintMessage(
                 "bad hash; calculated: {$calculatedHash}"
             );
@@ -227,14 +231,33 @@ function verifyHashes(): int
     return $filesProcessed;
 }
 
+function getNewFileNamePrefix()
+{
+    return str_replace('__', '_', str_replace(['/', '\\', ':'], '_', ltrim(getScanDir(), '/\\')));
+}
+
+function getStartTimeFormatted()
+{
+    global $startTime;
+
+    return date('Ymd_His', $startTime);
+}
+
+function getNewFileBaseName()
+{
+    $fileBaseName = getNewFileNamePrefix();
+    $startDateTime = getStartTimeFormatted();
+
+    return "{$fileBaseName}_{$startDateTime}";
+}
+
 function makeMhlFile()
 {
     global $filesNotInMhl, $startTime;
 
-    $startDateTime = date('YmdHi', $startTime);
+    $fileBaseName = getNewFileBaseName();
 
-    $currentDir = getcwd();
-    $reportFilePath = $currentDir . DIRECTORY_SEPARATOR . "nika-{$startDateTime}.mhl";
+    $reportFilePath = getcwd() . DIRECTORY_SEPARATOR . "$fileBaseName.mhl";
 
     $hFile = fopen($reportFilePath, 'w');
 

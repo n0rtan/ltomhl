@@ -2,19 +2,23 @@
 
 namespace lib\log;
 
+use function lib\mhl\getNewFileBaseName;
+
 $hLogFile = null;
-$logFileName = 'ltomhl.log';
+
+function getLogFilePath()
+{
+    return getcwd() . DIRECTORY_SEPARATOR . getNewFileBaseName() . '.log';
+}
 
 /**
  * Opens log file. Need to use logClose() at the end of programm.
  */
 function logOpen(): void
 {
-    global $hLogFile, $logFileName;
-    
-    $currentDir = getcwd();
-    $logFilePath = $currentDir . DIRECTORY_SEPARATOR . $logFileName;
-    $hLogFile = fopen($logFilePath, 'w');
+    global $hLogFile;
+
+    $hLogFile = fopen(getLogFilePath(), 'w');
 }
 
 /**

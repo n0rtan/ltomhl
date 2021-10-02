@@ -41,11 +41,15 @@ function addVerifiedFile($mhl, $filePath): void
     $validFilesCount = count($filesProcessed[$mhl]['valid']);
 }
 
-function addInvalidFile($mhl, $filePath): void
+function addInvalidFile($mhl, $filePath, $validHashType, $validHashValue): void
 {
     global $filesProcessed, $invalidFilesCount;
 
-    $filesProcessed[$mhl]['invalid'][$filePath] = [];
+    $filesProcessed[$mhl]['invalid'][$filePath] = [
+        'validHashType' => $validHashType,
+        'validHashValue' => $validHashValue,
+    ];
+
     $invalidFilesCount = count($filesProcessed[$mhl]['invalid']);
 }
 
@@ -123,7 +127,7 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
 
     if (isset($progress['invalid'])) {
         foreach($progress['invalid'] as $filePath => $fileData) {
-            fwrite($hFile, "<div class='line'>{$filePath}</div>\n");
+            fwrite($hFile, "<div class='line'>{$filePath} / valid data: {$fileData['validHashType']}:{$fileData['validHashValue']}</div>\n");
         }
     }
 

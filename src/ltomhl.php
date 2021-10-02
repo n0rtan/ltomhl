@@ -3,13 +3,11 @@
 use function lib\arguments\isHelpRequested;
 use function lib\arguments\isVersionRequested;
 use function lib\arguments\prepareArguments;
-use function lib\common\loadScanDir;
 use function lib\console\consolePrintDirectoryStats;
 use function lib\console\consolePrintHelp;
 use function lib\console\consolePrintMessage;
 use function lib\console\consolePrintState;
 use function lib\console\consolePrintVersion;
-use function lib\disk\getFileList;
 use function lib\disk\loadFileList;
 use function lib\log\logClose;
 use function lib\log\logMessage;
@@ -25,9 +23,9 @@ require_once('lib/common.php');
 
 try {
 
-    logOpen();
-
     prepareArguments();
+
+    logOpen();
 
     if (isHelpRequested()) {
         consolePrintHelp();

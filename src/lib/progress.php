@@ -3,9 +3,10 @@
 namespace progress;
 
 use function lib\arguments\isResetRequested;
+use function lib\mhl\getNewFileNamePrefix;
 
 $progressLastHashedFile = null;
-$progressFileName = '.hashing_progress';
+$progressFileBaseName = 'hashing_progress';
 
 function progressGetLastHashedFile(): ?string
 {
@@ -14,14 +15,19 @@ function progressGetLastHashedFile(): ?string
     return $progressLastHashedFile;
 }
 
+function getProgressFileName()
+{
+    global $progressFileBaseName;
+
+    return '.' . getNewFileNamePrefix() . '_' . $progressFileBaseName;
+}
+
 function progressAdd($filePath): void
 {
-    global $progressFileName;
+    $progressFileName = getProgressFileName();
+    $progressFilePath = getcwd() . DIRECTORY_SEPARATOR . $progressFileName;
 
-    $currentDir = getcwd();
-    $hashingLogFilePath = $currentDir . DIRECTORY_SEPARATOR . $progressFileName;
-
-    $hasgingLogFile = fopen($hashingLogFilePath, 'a+');
+    $hasgingLogFile = fopen($progressFilePath, 'a+');
 
     fwrite($hasgingLogFile, $filePath . PHP_EOL);
 
@@ -30,23 +36,23 @@ function progressAdd($filePath): void
 
 function progressInit(): void
 {
-    global $progressLastHashedFile, $progressFileName;
+    global $progressLastHashedFile;
 
-    $currentDir = getcwd();
-    $hashingLogFilePath = $currentDir . DIRECTORY_SEPARATOR . $progressFileName;
+    $progressFileName = getProgressFileName();
+    $progressFilePath = getcwd() . DIRECTORY_SEPARATOR . $progressFileName;
 
     if (isResetRequested()) {
-        $hFile = fopen($hashingLogFilePath, 'w');
+        $hFile = fopen($progressFilePath, 'w');
         fclose($hFile);
         return;
     }
 
-    if (!file_exists($hashingLogFilePath)) {
-        $hFile = fopen($hashingLogFilePath, 'w+');
+    if (!file_exists($progressFilePath)) {
+        $hFile = fopen($progressFilePath, 'w+');
         fclose($hFile);
     }
    
-    $data = file($hashingLogFilePath);
+    $data = file($progressFilePath);
     
     if (empty($data)) {
         return;
