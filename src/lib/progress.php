@@ -6,7 +6,7 @@ use function lib\arguments\isResetRequested;
 use function lib\mhl\getNewFileNamePrefix;
 
 $progressLastHashedFile = null;
-$progressFileBaseName = 'hashing_progress';
+$progressFileBaseName = 'progress';
 
 function progressGetLastHashedFile(): ?string
 {

@@ -251,15 +251,16 @@ function getNewFileBaseName()
     return "{$fileBaseName}_{$startDateTime}";
 }
 
+function getMhlFilePath()
+{
+    return getcwd() . DIRECTORY_SEPARATOR . getNewFileBaseName() . '.mhl';
+}
+
 function makeMhlFile()
 {
     global $filesNotInMhl, $startTime;
 
-    $fileBaseName = getNewFileBaseName();
-
-    $reportFilePath = getcwd() . DIRECTORY_SEPARATOR . "$fileBaseName.mhl";
-
-    $hFile = fopen($reportFilePath, 'w');
+    $hFile = fopen(getMhlFilePath(), 'w');
 
     fwrite($hFile, '<?xml version="1.0" encoding="UTF-8"?>
   <hashlist version="1.1">
