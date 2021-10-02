@@ -94,7 +94,6 @@ function updateFileList($mhlFileAbsolutePath, $data): void
 
     try {
         $fileList[$index]['mhl_file'] = $mhlFileAbsolutePath;
-
         list($hashType, $hashValue) = chooseHash($data);
         $fileList[$index][$hashType] = $hashValue;
     } catch(Exception $exception) {

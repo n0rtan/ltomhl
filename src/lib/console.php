@@ -21,7 +21,8 @@ function consolePrintHelp(): void
     "\t-reset - reset progress\n".
     "\t-mhl <path_to_mhl_file1> ... <path_to_mhl_fileN> - MHL-files\n".
     "\t-scandir <path_ro_scan_dir> - path to directory with files for scan\n".
-    "\texample: php \"d:\proj\php\ltomhl\src\ltomhl.php\" -mhl \"d:\\mhl_src\\flash1\\test1.mhl\" \"d:\\mhl_src\\flash2\\test2.mhl\" -scandir \"d:\\mhl_dst\\1231312\" -reset\n";
+    "\texample1: php \"d:\\proj\\php\\ltomhl\\src\\ltomhl.php\" -mhl \"e:\\mhl_src\\1231312\\flash1\\test1.mhl\" \"e:\\mhl_src\\1231312\\flash2\\test2.mhl\" -tp \"d:\\mhl_dst\\1231312\" -lp \"e:\\mhl_src\\1231312\" -reset\n".
+    "\texample2: php \"d:\\proj\\php\\ltomhl\\src\\ltomhl.php\" -mhl \"e:\\mhl_src\\1231312\\flash1\\test1.mhl\" -tp \"d:\\mhl_dst\\1231312\\flash1\" -lp \"e:\\mhl_src\\1231312\\flash1\" -reset\n";
     consolePrintMessage($str);
 }
 

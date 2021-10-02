@@ -5,6 +5,7 @@ namespace lib\log;
 use function lib\mhl\getNewFileBaseName;
 
 $hLogFile = null;
+$logFileName = 'ltomhl.log';
 
 function getLogFilePath()
 {
@@ -16,9 +17,10 @@ function getLogFilePath()
  */
 function logOpen(): void
 {
-    global $hLogFile;
-
-    $hLogFile = fopen(getLogFilePath(), 'w');
+    global $hLogFile, $logFileName;
+    
+    $logFilePath = 
+    $hLogFile = fopen($logFileName, 'w');
 }
 
 /**
