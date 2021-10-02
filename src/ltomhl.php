@@ -17,6 +17,7 @@ use function lib\mhl\makeMhlFile;
 use function lib\mhl\verifyHashes;
 use function lib\report\getInvalidFilesCount;
 use function lib\report\makeReport;
+use function progress\progressClose;
 use function progress\progressInit;
 
 require_once('lib/common.php');
@@ -69,4 +70,5 @@ try {
     echo "\n*** Some error occurs: {$exception->getMessage()}\n";
 } finally {
     logClose();
+    progressClose();
 }
