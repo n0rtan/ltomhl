@@ -23,9 +23,9 @@ require_once('lib/common.php');
 
 try {
 
-    prepareArguments();
-
     logOpen();
+
+    prepareArguments();   
 
     if (isHelpRequested()) {
         consolePrintHelp();
