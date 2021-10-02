@@ -69,7 +69,7 @@ function progressInit(): void
         $data = json_decode($line, true);
         $lastFile = $data['file'];
         loadProgressByFile($data['result']);
-    }   
+    }
 
     $progressLastHashedFile = $lastFile;
 }

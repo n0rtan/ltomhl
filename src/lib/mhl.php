@@ -210,10 +210,10 @@ function verifyHashes(): int
                 'validHashValue'=> $calculatedHash,
             ];
             consolePrintMessage(
-                "not exists in mhl file. Calculated hash is {$calculatedHash} of type {$hashTypeForCalc}"
+                "not exists in mhl file. Calculated hash is {$calculatedHash} with type {$hashTypeForCalc}"
             );
             logMessage(
-                "$fileAbsolutePath not exists in mhl file. Calculated hash is {$calculatedHash} of type {$hashTypeForCalc}"
+                "$fileAbsolutePath not exists in mhl file. Calculated hash is {$calculatedHash} with type {$hashTypeForCalc}"
             );
         } else if ($hashSavedFromMhl !== $calculatedHash) {
             addInvalidFile(basename($fileData['mhl_file']), $fileAbsolutePath, $hashType, $hashSavedFromMhl);
@@ -225,10 +225,10 @@ function verifyHashes(): int
                 'validHashValue'=> $hashSavedFromMhl,
             ];
             consolePrintMessage(
-                "bad hash; calculated: {$calculatedHash}"
+                "bad hash; calculated: {$calculatedHash} with type {$hashTypeForCalc}"
             );
             logMessage(
-                "Bad hash for file: $fileAbsolutePath; calculated: {$calculatedHash}"
+                "Bad hash for file: $fileAbsolutePath; calculated: {$calculatedHash} with type {$hashTypeForCalc}"
             );
         } else {
             addVerifiedFile(basename($fileData['mhl_file']), $fileAbsolutePath);
