@@ -4,9 +4,13 @@ namespace progress;
 
 use function lib\arguments\isResetRequested;
 use function lib\mhl\getNewFileNamePrefix;
+use function lib\report\addInvalidFile;
+use function lib\report\addNotInMhlFile;
+use function lib\report\addVerifiedFile;
 
 $progressLastHashedFile = null;
 $progressFileBaseName = 'progress';
+$progressFile = null;
 
 function progressGetLastHashedFile(): ?string
 {
@@ -27,39 +31,62 @@ function getProgressfilePath()
     return getcwd() . DIRECTORY_SEPARATOR . getProgressFileName();
 }
 
-function progressAdd($filePath): void
+function progressAdd($filePath, $result): void
 { 
-    $hasgingLogFile = fopen(getProgressfilePath(), 'a+');
+    global $progressFile;
 
-    fwrite($hasgingLogFile, $filePath . PHP_EOL);
+    $json = json_encode([
+        'file' => $filePath,
+        'result' => $result,
+    ]);
 
-    fclose($hasgingLogFile);
+    fwrite($progressFile, $json . PHP_EOL);    
+}
+
+function progressOpen($clean = false)
+{
+    global $progressFile;
+
+    $progressFile = fopen(getProgressfilePath(), $clean ? 'w+' : 'a+');
+}
+
+function progressClose()
+{
+    global $progressFile;
+
+    fclose($progressFile);
 }
 
 function progressInit(): void
 {
-    global $progressLastHashedFile;
+    global $progressLastHashedFile, $progressFile;
 
-    $progressFilePath = getProgressfilePath();
+    progressOpen(isResetRequested());
 
-    if (isResetRequested()) {
-        $hFile = fopen($progressFilePath, 'w');
-        fclose($hFile);
-        return;
+    $lastFile = null;
+
+    while (($line = fgets($progressFile)) !== false) {
+        $data = json_decode($line, true);
+        $lastFile = $data['file'];
+        loadProgressByFile($data['result']);
     }
 
-    if (!file_exists($progressFilePath)) {
-        $hFile = fopen($progressFilePath, 'w+');
-        fclose($hFile);
-    }
-   
-    $data = file($progressFilePath);
-    
-    if (empty($data)) {
-        return;
-    }
+    $progressLastHashedFile = $lastFile;
+}
 
-    $line = $data[count($data)-1];
+function loadProgressByFile($result): void
+{
+    switch($result['type']) {
+        case 'not_in_mhl':
+            addNotInMhlFile($result['fileAbsolutePath'], $result['validHashType'], $result['validHashValue']);
+            break;
 
-    $progressLastHashedFile = trim($line);
+        case 'invalid':
+            addInvalidFile($result['mhl_file'], $result['fileAbsolutePath'], $result['validHashType'], $result['validHashValue']);
+            break;
+
+        case 'valid':
+            addVerifiedFile($result['mhl_file'], $result['fileAbsolutePath']);
+            break;
+    }
 }
