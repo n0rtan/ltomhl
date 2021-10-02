@@ -173,6 +173,8 @@ function verifyHashes(): int
                 continue;
             } else {
                 $paused = false;
+                $filesProcessed++;
+                $i++;
                 continue;
             }        
         }
