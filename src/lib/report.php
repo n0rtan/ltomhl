@@ -2,6 +2,9 @@
 
 namespace lib\report;
 
+use function lib\mhl\getNewFileNamePrefix;
+use function lib\mhl\getStartTimeFormatted;
+
 $filesNotInMhl = [];
 
 $filesProcessed = [];
@@ -57,22 +60,26 @@ function makeReport()
 {
     global $filesProcessed, $startTime;
 
-    $startDateTime = date('YmdHi', $startTime);
-
     foreach(array_keys($filesProcessed) as $mhlName) {
-        $reportFileName = "{$mhlName}-{$startDateTime}.html";
-        makeReportFromExistHhl($reportFileName, $mhlName);
+        makeReportFromExistHhl(getReportFileBaseName($mhlName), $mhlName);
     }
+}
+
+function getReportFilePath($reportFileName)
+{
+    return getcwd() . DIRECTORY_SEPARATOR . $reportFileName;
+}
+
+function getReportFileBaseName($mhlName)
+{
+    return getNewFileNamePrefix() . "_{$mhlName}_" . getStartTimeFormatted() . ".html";
 }
 
 function makeReportFromExistHhl($reportFileName, $mhlName)
 {
     global $filesProcessed, $invalidFilesCount, $validFilesCount;
 
-    $currentDir = getcwd();
-    $reportFilePath = $currentDir . DIRECTORY_SEPARATOR . $reportFileName;
-
-    $hFile = fopen($reportFilePath, 'w');
+    $hFile = fopen(getReportFilePath($reportFileName), 'w');
 
     $progress = &$filesProcessed[$mhlName];
 
