@@ -31,7 +31,9 @@ function logBadClose(): void
 {
     global $hBadLogFile;
 
-    fclose($hBadLogFile);
+    if ($hBadLogFile) {
+        fclose($hBadLogFile);
+    }
 }
 
 /**

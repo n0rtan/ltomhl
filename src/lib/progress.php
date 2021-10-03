@@ -5,6 +5,7 @@ namespace progress;
 use function lib\arguments\isResetRequested;
 use function lib\console\consolePrintMessage;
 use function lib\log\logMessage;
+use function lib\log_bad\logBadAdd;
 use function lib\mhl\getNewFileNamePrefix;
 use function lib\report\addInvalidFile;
 use function lib\report\addNotInMhlFile;
@@ -56,7 +57,9 @@ function progressClose()
 {
     global $progressFile;
 
-    fclose($progressFile);
+    if ($progressFile) {
+        fclose($progressFile);
+    }
 }
 
 function progressInit(): void
@@ -105,6 +108,7 @@ function loadProgressByFile($result): void
 
         case 'invalid':
             addInvalidFile($result['mhl_file'], $result['fileAbsolutePath'], $result['validHashType'], $result['validHashValue']);
+            logBadAdd($result['fileAbsolutePath']);
             break;
 
         case 'valid':

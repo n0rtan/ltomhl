@@ -32,8 +32,6 @@ try {
     
     prepareArguments();
 
-    logBadOpen();
-
     if (isHelpRequested()) {
         consolePrintHelp();
         exit;
@@ -43,6 +41,8 @@ try {
         consolePrintVersion();
         exit;
     }
+
+    logBadOpen();
 
     $stateMsg = consolePrintState();
     logMessage($stateMsg);
