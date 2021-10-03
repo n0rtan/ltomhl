@@ -11,6 +11,7 @@ use function lib\arguments\getScanDir;
 use function lib\console\consolePrintMessage;
 use function lib\disk\getFileList;
 use function lib\log\logMessage;
+use function lib\log_bad\logBadAdd;
 use function lib\report\addInvalidFile;
 use function lib\report\addNotInMhlFile;
 use function lib\report\addVerifiedFile;
@@ -226,6 +227,7 @@ function verifyHashes(): int
             logMessage(
                 "Bad hash for file: $fileAbsolutePath; calculated: {$calculatedHash} with type {$hashTypeForCalc}"
             );
+            logBadAdd($fileAbsolutePath);
         } else {
             addVerifiedFile(basename($fileData['mhl_file']), $fileAbsolutePath);
             $result = [
