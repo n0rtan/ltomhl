@@ -14,6 +14,8 @@ use function lib\disk\saveFileList;
 use function lib\log\logClose;
 use function lib\log\logMessage;
 use function lib\log\logOpen;
+use function lib\log_bad\logBadClose;
+use function lib\log_bad\logBadOpen;
 use function lib\mhl\loadMhlFiles;
 use function lib\mhl\makeMhlFile;
 use function lib\mhl\verifyHashes;
@@ -27,8 +29,10 @@ require_once('lib/common.php');
 try {
 
     logOpen();
+    
+    prepareArguments();
 
-    prepareArguments();   
+    logBadOpen();
 
     if (isHelpRequested()) {
         consolePrintHelp();
@@ -76,5 +80,6 @@ try {
     echo "\n*** Some error occurs: {$exception->getMessage()}\n";
 } finally {
     logClose();
+    logBadClose();
     progressClose();
 }
