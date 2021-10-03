@@ -92,7 +92,15 @@ function loadProgressByFile($result): void
 {
     switch($result['type']) {
         case 'not_in_mhl':
-            addNotInMhlFile($result['fileAbsolutePath'], $result['validHashType'], $result['validHashValue']);
+            addNotInMhlFile(
+                $result['fileAbsolutePath'], 
+                $result['validHashType'], 
+                $result['validHashValue'], 
+                $result['hasdate'],
+                $result['size'],
+                $result['creationdate'],
+                $result['lastmodificationdate']
+            );
             break;
 
         case 'invalid':

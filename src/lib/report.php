@@ -2,6 +2,8 @@
 
 namespace lib\report;
 
+use function lib\console\consolePrintMessage;
+use function lib\log\logMessage;
 use function lib\mhl\getNewFileNamePrefix;
 use function lib\mhl\getStartTimeFormatted;
 
@@ -27,13 +29,26 @@ function getValidFilesCount()
     return $validFilesCount;
 }
 
-function addNotInMhlFile($filePath, $hashType, $hashVal): void
+function addNotInMhlFile($filePath, $hashType, $hashVal, $hashdate, $size = null, $creationdate = null, $lastmodificationdate = null): void
 {
     global $filesNotInMhl;
 
     $filesNotInMhl[$filePath] = [
         $hashType => $hashVal,
+        'hashdate' => $hashdate,
     ];
+
+    if (!is_null($size)) {
+        $filesNotInMhl[$filePath][] = $size;
+    }
+
+    if (!is_null($creationdate)) {
+        $filesNotInMhl[$filePath]['creationdate'] = date('Y-m-d H:i:s T', $creationdate);
+    }
+
+    if (!is_null($lastmodificationdate)) {
+        $filesNotInMhl[$filePath]['lastmodificationdate'] = date('Y-m-d H:i:s T', $lastmodificationdate);
+    }
 }
 
 function addVerifiedFile($mhl, $filePath): void
