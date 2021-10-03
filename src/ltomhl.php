@@ -21,8 +21,8 @@ use function lib\mhl\makeMhlFile;
 use function lib\mhl\verifyHashes;
 use function lib\report\getInvalidFilesCount;
 use function lib\report\makeReport;
-use function progress\progressClose;
-use function progress\progressInit;
+use function lib\progress\progressClose;
+use function lib\progress\progressInit;
 
 require_once('lib/common.php');
 

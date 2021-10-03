@@ -16,8 +16,8 @@ use function lib\report\addInvalidFile;
 use function lib\report\addNotInMhlFile;
 use function lib\report\addVerifiedFile;
 use function lib\report\getInvalidFilesCount;
-use function progress\progressAdd;
-use function progress\progressGetLastHashedFile;
+use function lib\progress\progressAdd;
+use function lib\progress\progressGetLastHashedFile;
 
 $hashPriorityList = [
     'xxhash64be',

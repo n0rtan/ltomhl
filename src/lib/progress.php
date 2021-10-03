@@ -1,6 +1,6 @@
 <?php
 
-namespace progress;
+namespace lib\progress;
 
 use function lib\arguments\isResetRequested;
 use function lib\console\consolePrintMessage;

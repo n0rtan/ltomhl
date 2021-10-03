@@ -4,9 +4,6 @@ namespace lib\arguments;
 
 use Exception;
 
-use function lib\console\consolePrintMessage;
-use function lib\log\logMessage;
-
 require_once('errors.php');
 
 define('ARG_KEY_HELP', 'help');

@@ -2,8 +2,6 @@
 
 namespace lib\report;
 
-use function lib\console\consolePrintMessage;
-use function lib\log\logMessage;
 use function lib\mhl\getNewFileNamePrefix;
 use function lib\mhl\getStartTimeFormatted;
 
