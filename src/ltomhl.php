@@ -28,6 +28,8 @@ require_once('lib/common.php');
 
 try {
 
+    ini_set('memory_limit', '2047MB');
+
     logOpen();
     
     prepareArguments();
