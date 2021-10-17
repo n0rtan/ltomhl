@@ -2,6 +2,7 @@
 
 namespace lib\report;
 
+use function lib\arguments\getScanDir;
 use function lib\mhl\getNewFileNamePrefix;
 use function lib\mhl\getStartTimeFormatted;
 
@@ -88,6 +89,11 @@ function getReportFileBaseName($mhlName)
     return getNewFileNamePrefix() . "_{$mhlName}_" . getStartTimeFormatted() . ".html";
 }
 
+function cleanPathForReport($filePath)
+{
+    return ltrim(str_replace(getScanDir(), '', $filePath), '/\\');
+}
+
 function makeReportFromExistHhl($reportFileName, $mhlName)
 {
     global $filesProcessed, $invalidFilesCount, $validFilesCount;
@@ -147,7 +153,8 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
 
     if (isset($progress['invalid'])) {
         foreach($progress['invalid'] as $filePath => $fileData) {
-            fwrite($hFile, "<div class='line'>{$filePath} / valid data: {$fileData['validHashType']}:{$fileData['validHashValue']}</div>\n");
+            $cleanPath = cleanPathForReport($filePath);
+            fwrite($hFile, "<div class='line'>{$cleanPath} / valid data: {$fileData['validHashType']}:{$fileData['validHashValue']}</div>\n");
         }
     }
 
@@ -155,7 +162,8 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
 
     if (isset($progress['valid'])) {
         foreach($progress['valid'] as $filePath => $fileData) {
-            fwrite($hFile, "<div class='line'>{$filePath}</div>\n");
+            $cleanPath = cleanPathForReport($filePath);
+            fwrite($hFile, "<div class='line'>{$cleanPath}</div>\n");
         }
     }   
 
