@@ -1,5 +1,6 @@
 <?php
 
+use function lib\arguments\getLocalDir;
 use function lib\arguments\isHelpRequested;
 use function lib\arguments\isVersionRequested;
 use function lib\arguments\prepareArguments;
@@ -8,7 +9,8 @@ use function lib\console\consolePrintHelp;
 use function lib\console\consolePrintMessage;
 use function lib\console\consolePrintState;
 use function lib\console\consolePrintVersion;
-use function lib\disk\loadFileList;
+use function lib\disk\findScanFolders;
+use function lib\disk\restoreFileList;
 use function lib\disk\readFileList;
 use function lib\disk\saveFileList;
 use function lib\log\logClose;
@@ -52,7 +54,9 @@ try {
     consolePrintMessage('Loading file list...');
     logMessage('Loading file list');
 
-    if (!loadFileList()) {
+    findScanFolders(getLocalDir());
+
+    if (!restoreFileList()) {
         consolePrintMessage('Reading directory contents...');
         logMessage('Reading directory contents');
         readFileList();
