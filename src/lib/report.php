@@ -136,7 +136,6 @@ function makeReport()
             .collapsible {
                 color: white;
                 cursor: pointer;
-                width: 100%;
                 border: none;
                 text-align: left;
                 outline: none;
