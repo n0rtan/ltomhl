@@ -128,7 +128,7 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
                 border-radius: 4px;
                 color: #d9d9d9;
                 padding: 1px 5px;
-                text-shadow: 1px 1px #181818;
+                text-shadow: 1px 1px 6px #000000;
                 margin-top: 10px !important;
             }
 
