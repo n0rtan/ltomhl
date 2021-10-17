@@ -27,7 +27,7 @@ function getFileListFileName()
 
 function loadFileList(): bool
 {
-    global $fileList;
+    global $fileList, $filesCount;
 
     $filePath = getFileListFilePath();
 
@@ -36,9 +36,10 @@ function loadFileList(): bool
         fclose($hfile);
     } else if (is_readable($filePath)) {
         $fileList = json_decode(file_get_contents($filePath), true);
+        $filesCount = count($fileList);
     }
-
-    return count($fileList) > 0;
+    
+    return $filesCount > 0;
 }
 
 function saveFileList(): void
