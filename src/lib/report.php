@@ -185,8 +185,8 @@ function makeReport()
 
     // Summary
 
-    $validCount   = array_reduce($filesProcessed, fn($carry, $item) => $carry += count($item['valid']) ?? 0, 0);
-    $invalidCount = array_reduce($filesProcessed, fn($carry, $item) => $carry += count($item['invalid']) ?? 0, 0);
+    $validCount   = array_reduce($filesProcessed, fn($carry, $item) => $carry += isset($item['valid']) ? count($item['valid']) : 0, 0);
+    $invalidCount = array_reduce($filesProcessed, fn($carry, $item) => $carry += isset($item['invalid']) ? count($item['invalid']) : 0, 0);
     $filesTotal = $validCount + $invalidCount;
 
     fwrite($hFile, "\n<div>
