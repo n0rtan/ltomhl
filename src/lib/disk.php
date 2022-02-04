@@ -8,10 +8,18 @@ use function lib\log\logMessage;
 use function lib\mhl\getNewFileNamePrefix;
 use function lib\mhl\normalizePath;
 
+$scanFolders = [];
 $fileList = [];
 $filesCount = 0;
 
 $fileListBaseFileName = 'filelist';
+
+function getScanFolders()
+{
+    global $scanFolders;
+
+    return $scanFolders;
+}
 
 function getFileListFilePath()
 {
@@ -25,9 +33,9 @@ function getFileListFileName()
     return '.' . getNewFileNamePrefix() . '_' . $fileListBaseFileName;
 }
 
-function loadFileList(): bool
+function restoreFileList(): bool
 {
-    global $fileList;
+    global $fileList, $filesCount;
 
     $filePath = getFileListFilePath();
 
@@ -36,9 +44,10 @@ function loadFileList(): bool
         fclose($hfile);
     } else if (is_readable($filePath)) {
         $fileList = json_decode(file_get_contents($filePath), true);
+        $filesCount = count($fileList);
     }
-
-    return count($fileList) > 0;
+    
+    return $filesCount > 0;
 }
 
 function saveFileList(): void
@@ -97,6 +106,35 @@ function read_dir($dir): void
             collectFiles($dir, $file);
         } else if (is_dir($filepath)) {
             read_dir($filepath);
+        }
+    }
+
+    closedir($handle);
+}
+
+function findScanFolders($dir)
+{
+    global $scanFolders;
+
+    $handle = opendir($dir);
+
+    $folders = [];
+
+    while (($file = readdir($handle)) !== false) {
+
+        if (preg_match('#^\.#', $file)) {
+            continue;
+        }
+
+        $filepath = $dir . DIRECTORY_SEPARATOR . $file;
+
+        if (is_link($filepath)) {
+            logMessage("Symbolic link detected ({$filepath}). Skipped.");
+            continue;
+        }
+
+        if (is_dir($filepath)) {
+            $scanFolders[] = $file;
         }
     }
 

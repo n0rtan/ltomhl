@@ -16,8 +16,8 @@ use function lib\report\addInvalidFile;
 use function lib\report\addNotInMhlFile;
 use function lib\report\addVerifiedFile;
 use function lib\report\getInvalidFilesCount;
-use function progress\progressAdd;
-use function progress\progressGetLastHashedFile;
+use function lib\progress\progressAdd;
+use function lib\progress\progressGetLastHashedFile;
 
 $hashPriorityList = [
     'xxhash64be',
@@ -25,6 +25,18 @@ $hashPriorityList = [
     'xxhash',
     'md5',
     'sha1',
+];
+
+$mhlHashFields = [
+    'xxhash64be',
+    'xxhash64',
+    'xxhash',
+    'md5',
+    'sha1',
+    'file',
+    'creationdate',
+    'lastmodificationdate',
+    'hashdate',
 ];
 
 function loadMhlFiles(): void
@@ -168,14 +180,12 @@ function verifyHashes(): int
         if ($paused) {
             $filesProcessed++;
             $i++;
-            if ($lastHashedFile !== $fileAbsolutePath) {
-                continue;
-            } else {
+            if ($lastHashedFile === $fileAbsolutePath) {
                 $paused = false;
-                continue;
-            }        
+            }
+            continue;
         }
-        
+
         $invalidFilesCountString = getInvalidFilesCount() ? '(' . getInvalidFilesCount() . ')' : '';
 
         consolePrintMessage(
@@ -199,12 +209,35 @@ function verifyHashes(): int
         $result = [];
 
         if ($isNotInMhl) {
-            addNotInMhlFile($fileAbsolutePath, $hashTypeForCalc, $calculatedHash);
+            $fsize = $fcreationdate = $flastmodificationdate = null;
+            $fhashdate = time();
+            $fstat = stat($fileAbsolutePath);
+            if ($fstat) {
+                $fsize = $fstat['size'];
+                $fcreationdate = $fstat['mtime'];
+                $flastmodificationdate = $fstat['mtime'];
+            } else {
+                consolePrintMessage("Can't get file info for {$fileAbsolutePath}");
+                logMessage("Can't get file info for {$fileAbsolutePath}");
+            }
+            addNotInMhlFile(
+                $fileAbsolutePath, 
+                $hashTypeForCalc, 
+                $calculatedHash, 
+                $fhashdate, 
+                $fsize, 
+                $fcreationdate, 
+                $flastmodificationdate
+            );
             $result = [
                 'type' => 'not_in_mhl',
                 'fileAbsolutePath' => $fileAbsolutePath,
                 'validHashType' => $hashTypeForCalc,
                 'validHashValue'=> $calculatedHash,
+                'hasdate' => $fhashdate,
+                'size' => $fsize,
+                'creationdate' => $fcreationdate,
+                'lastmodificationdate' => $flastmodificationdate,
             ];
             consolePrintMessage(
                 "not exists in mhl file. Calculated hash is {$calculatedHash} with type {$hashTypeForCalc}"
@@ -279,26 +312,35 @@ function getMhlFilePath()
 
 function makeMhlFile()
 {
-    global $filesNotInMhl, $startTime;
+    global $filesNotInMhl, $startTime, $mhlHashFields;
 
     $hFile = fopen(getMhlFilePath(), 'w');
 
     fwrite($hFile, '<?xml version="1.0" encoding="UTF-8"?>
-  <hashlist version="1.1">
-    <creatorinfo>
-      <username>Nika Digital</username>
-      <hostname>'. gethostname() .'</hostname>
-      <tool>mhl ver. 0.2.0</tool>
-      <startdate>'. date('Y-m-d H:i:s T', $startTime) .'</startdate>
-      <finishdate>'. date('Y-m-d H:i:s T', time()) .'</finishdate>
-    </creatorinfo>
+<hashlist version="1.1">
+  <creatorinfo>
+    <username>Nika Digital</username>
+    <hostname>'. gethostname() .'</hostname>
+    <tool>mhl ver. 0.2.0</tool>
+    <startdate>'. date('Y-m-d H:i:s T', $startTime) .'</startdate>
+    <finishdate>'. date('Y-m-d H:i:s T', time()) .'</finishdate>
+  </creatorinfo>
     ');
 
     foreach($filesNotInMhl as $filePath => $fileData) {
-        fwrite($hFile, "\n    <hash><file>{$filePath}</file></hash>");
+        fwrite($hFile, "\n  <hash>\n");
+        fwrite($hFile, "      <file>{$filePath}</file>\n");
+
+        foreach($fileData as $field => $value) {
+            if (in_array($field, $mhlHashFields)) {
+                fwrite($hFile, "      <{$field}>{$value}</{$field}>\n");
+            }
+        }
+        
+        fwrite($hFile, "  </hash>");
     }
 
-    fwrite($hFile, "\n</hashlist>");
+    fwrite($hFile, "\n\n</hashlist>");
 
     fclose($hFile);
 }

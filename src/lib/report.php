@@ -2,6 +2,9 @@
 
 namespace lib\report;
 
+use function lib\arguments\getMhlFilePaths;
+use function lib\arguments\getScanDir;
+use function lib\disk\getScanFolders;
 use function lib\mhl\getNewFileNamePrefix;
 use function lib\mhl\getStartTimeFormatted;
 
@@ -27,13 +30,26 @@ function getValidFilesCount()
     return $validFilesCount;
 }
 
-function addNotInMhlFile($filePath, $hashType, $hashVal): void
+function addNotInMhlFile($filePath, $hashType, $hashVal, $hashdate, $size = null, $creationdate = null, $lastmodificationdate = null): void
 {
     global $filesNotInMhl;
 
     $filesNotInMhl[$filePath] = [
         $hashType => $hashVal,
+        'hashdate' => $hashdate,
     ];
+
+    if (!is_null($size)) {
+        $filesNotInMhl[$filePath][] = $size;
+    }
+
+    if (!is_null($creationdate)) {
+        $filesNotInMhl[$filePath]['creationdate'] = date('Y-m-d H:i:s T', $creationdate);
+    }
+
+    if (!is_null($lastmodificationdate)) {
+        $filesNotInMhl[$filePath]['lastmodificationdate'] = date('Y-m-d H:i:s T', $lastmodificationdate);
+    }
 }
 
 function addVerifiedFile($mhl, $filePath): void
@@ -56,32 +72,28 @@ function addInvalidFile($mhl, $filePath, $validHashType, $validHashValue): void
     $invalidFilesCount = count($filesProcessed[$mhl]['invalid']);
 }
 
+function getReportFilePath()
+{
+    return getcwd() . DIRECTORY_SEPARATOR . getReportFileBaseName();
+}
+
+function getReportFileBaseName()
+{
+    return getNewFileNamePrefix() . "_" . getStartTimeFormatted() . ".html";
+}
+
+function cleanPathForReport($filePath)
+{
+    return ltrim(str_replace(getScanDir(), '', $filePath), '/\\');
+}
+
 function makeReport()
 {
-    global $filesProcessed, $startTime;
+    global $filesProcessed;
 
-    foreach(array_keys($filesProcessed) as $mhlName) {
-        makeReportFromExistHhl(getReportFileBaseName($mhlName), $mhlName);
-    }
-}
+    $hFile = fopen(getReportFilePath(), 'w');
 
-function getReportFilePath($reportFileName)
-{
-    return getcwd() . DIRECTORY_SEPARATOR . $reportFileName;
-}
-
-function getReportFileBaseName($mhlName)
-{
-    return getNewFileNamePrefix() . "_{$mhlName}_" . getStartTimeFormatted() . ".html";
-}
-
-function makeReportFromExistHhl($reportFileName, $mhlName)
-{
-    global $filesProcessed, $invalidFilesCount, $validFilesCount;
-
-    $hFile = fopen(getReportFilePath($reportFileName), 'w');
-
-    $progress = &$filesProcessed[$mhlName];
+    $dayTitle = basename(getScanDir());
 
     fwrite($hFile, "<html>
     <head>
@@ -89,30 +101,41 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
 
             body {
                 background-color: #181818;
-                font-size: 12px;
+                font-size: 1em;
                 font-family: monospace;
                 color: #ababab;
                 margin: 5px 3px;
             }
 
+            .titul
+            {
+                text-align: center;
+            }
+
             .caption {
+                font-size: 1.6em;
                 font-weight: bold;
                 background-color: hsl(0deg 0% 20%);
                 border-radius: 4px;
                 color: #d9d9d9;
                 padding: 1px 5px;
-                text-shadow: 1px 1px #181818;
+                text-shadow: 1px 1px 6px #000000;
+                margin-top: 10px !important;
             }
 
             .line {
                 padding: 2px 2px 2px 5px;
+                font-size: 1.4em;
+            }
+
+            .invalid {
+                color: red;
             }
 
 
             .collapsible {
                 color: white;
                 cursor: pointer;
-                width: 100%;
                 border: none;
                 text-align: left;
                 outline: none;
@@ -126,25 +149,75 @@ function makeReportFromExistHhl($reportFileName, $mhlName)
 
         </style>
 
-        <title>{$mhlName}</title>
+        <title>DAY {$dayTitle} report</title>
     </head>
     <body>\n");
 
-    fwrite($hFile, "\n</div>\n<div class='caption collapsible active' type='button'>Invalid files ({$invalidFilesCount}):</div>\n<div class='content'>\n");
 
-    if (isset($progress['invalid'])) {
-        foreach($progress['invalid'] as $filePath => $fileData) {
-            fwrite($hFile, "<div class='line'>{$filePath} / valid data: {$fileData['validHashType']}:{$fileData['validHashValue']}</div>\n");
-        }
+    fwrite($hFile, "\n<h1 class='titul'>DAY {$dayTitle}</h1>\n");
+
+    // folders
+
+    fwrite($hFile, "\n<div>
+        <div class='caption'>Folders:</div>");
+
+    foreach(getScanFolders() as $scanFolder) {
+        fwrite($hFile, "\n<div class='line'>{$scanFolder}</div>\n");
     }
 
-    fwrite($hFile, "\n<div class='caption collapsible active' type='button'>Valid files ({$validFilesCount}):</div>\n<div class='content'>");
+    fwrite($hFile, "\n</div>\n");
 
-    if (isset($progress['valid'])) {
-        foreach($progress['valid'] as $filePath => $fileData) {
-            fwrite($hFile, "<div class='line'>{$filePath}</div>\n");
+    // /folders
+
+    // MHLs
+
+    fwrite($hFile, "\n<div>
+        <div class='caption'>MHLs:</div>");
+
+    foreach(getMhlFilePaths() as $mhlPath) {
+        $mhlFileName = basename($mhlPath);
+        fwrite($hFile, "\n<div class='line'>{$mhlFileName}</div>\n");
+    }
+
+    fwrite($hFile, "\n</div>\n");
+
+    // /MHLs
+
+    // Summary
+
+    $validCount   = array_reduce($filesProcessed, fn($carry, $item) => $carry += isset($item['valid']) ? count($item['valid']) : 0, 0);
+    $invalidCount = array_reduce($filesProcessed, fn($carry, $item) => $carry += isset($item['invalid']) ? count($item['invalid']) : 0, 0);
+    $filesTotal = $validCount + $invalidCount;
+
+    fwrite($hFile, "\n<div>
+        <div class='caption'>Summary:</div>");
+        fwrite($hFile, "\n<div class='line'>{$filesTotal} files processed. {$invalidCount} files invalid</div>\n");
+    fwrite($hFile, "\n</div>\n");
+
+    // /Summary
+
+
+    fwrite($hFile, "\n<div class='caption collapsible active' type='button'>Invalid files ({$invalidCount}):</div>\n<div class='content'>\n");
+
+    array_walk($filesProcessed, function($item) use ($hFile) {
+        if (isset($item['invalid'])) {
+            foreach($item['invalid'] as $filePath => $fileData) {
+                $cleanPath = cleanPathForReport($filePath);
+                fwrite($hFile, "<div class='line invalid'>{$cleanPath} / valid data: {$fileData['validHashType']}:{$fileData['validHashValue']}</div>\n");
+            }
         }
-    }   
+    });
+
+    fwrite($hFile, "\n</div>\n<div class='caption collapsible active' type='button'>Valid files ({$validCount}):</div>\n<div class='content'>");
+
+    array_walk($filesProcessed, function($item) use ($hFile) {
+        if (isset($item['valid'])) {
+            foreach($item['valid'] as $filePath => $fileData) {
+                $cleanPath = cleanPathForReport($filePath);
+                fwrite($hFile, "<div class='line'>{$cleanPath}</div>\n");
+            }
+        }  
+    });     
 
     fwrite($hFile, "\n</div>\n " . 
     '<script>

@@ -1,5 +1,6 @@
 <?php
 
+use function lib\arguments\getLocalDir;
 use function lib\arguments\isHelpRequested;
 use function lib\arguments\isVersionRequested;
 use function lib\arguments\prepareArguments;
@@ -8,7 +9,8 @@ use function lib\console\consolePrintHelp;
 use function lib\console\consolePrintMessage;
 use function lib\console\consolePrintState;
 use function lib\console\consolePrintVersion;
-use function lib\disk\loadFileList;
+use function lib\disk\findScanFolders;
+use function lib\disk\restoreFileList;
 use function lib\disk\readFileList;
 use function lib\disk\saveFileList;
 use function lib\log\logClose;
@@ -21,18 +23,18 @@ use function lib\mhl\makeMhlFile;
 use function lib\mhl\verifyHashes;
 use function lib\report\getInvalidFilesCount;
 use function lib\report\makeReport;
-use function progress\progressClose;
-use function progress\progressInit;
+use function lib\progress\progressClose;
+use function lib\progress\progressInit;
 
 require_once('lib/common.php');
 
 try {
 
+    ini_set('memory_limit', '2047M');
+
     logOpen();
     
     prepareArguments();
-
-    logBadOpen();
 
     if (isHelpRequested()) {
         consolePrintHelp();
@@ -44,13 +46,17 @@ try {
         exit;
     }
 
+    logBadOpen();
+
     $stateMsg = consolePrintState();
     logMessage($stateMsg);
 
     consolePrintMessage('Loading file list...');
     logMessage('Loading file list');
 
-    if (!loadFileList()) {
+    findScanFolders(getLocalDir());
+
+    if (!restoreFileList()) {
         consolePrintMessage('Reading directory contents...');
         logMessage('Reading directory contents');
         readFileList();

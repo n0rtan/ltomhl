@@ -89,28 +89,33 @@ function readArguments(): array
 
     array_shift($argv);
 
-    $argType = null;
+    $lastKey = null;
 
     foreach($argv as $arg) {
         
         $argVal = ltrim($arg, '-');
 
-        // todo: check is key
+        if (strpos($arg, '-') === 0) {
+            if (in_array($argVal, ARG_KEYS)) {
+                $lastKey = $argVal;
+                $arguments[$lastKey] = [];
+                continue;
+            }
 
-        if (in_array($argVal, ARG_KEYS)) {
-            $argType = $argVal;
-            $arguments[$argType] = [];
-            continue;
-        }
-
-        if (empty($argType)) {
             throw new Exception(
-                "Invalid arguments: " . var_export($argv, true),
+                "Undefined key '{$arg}' was passed",
+                ERROR_INVALID_ARGUMENTS
+            );
+        }        
+
+        if (empty($lastKey)) {
+            throw new Exception(
+                "Expected key not passed: " . var_export($argv, true),
                 ERROR_INVALID_ARGUMENTS
             );
         }
 
-        $arguments[$argType][] = $arg;
+        $arguments[$lastKey][] = $arg;
     }
 
     return $arguments;

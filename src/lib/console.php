@@ -20,7 +20,8 @@ function consolePrintHelp(): void
     "\t-version - show version\n".
     "\t-reset - reset progress\n".
     "\t-mhl <path_to_mhl_file1> ... <path_to_mhl_fileN> - MHL-files\n".
-    "\t-scandir <path_ro_scan_dir> - path to directory with files for scan\n".
+    "\t-lp <local_path_to_scan_dir> - local root (daily) path to directory with mhl-files\n".
+    "\t-tp <tape_path_to_scan_dir> - tape root (daily) path to directory with files for scan\n".
     "\texample1: php \"d:\\proj\\php\\ltomhl\\src\\ltomhl.php\" -mhl \"e:\\mhl_src\\1231312\\flash1\\test1.mhl\" \"e:\\mhl_src\\1231312\\flash2\\test2.mhl\" -tp \"d:\\mhl_dst\\1231312\" -lp \"e:\\mhl_src\\1231312\" -reset\n".
     "\texample2: php \"d:\\proj\\php\\ltomhl\\src\\ltomhl.php\" -mhl \"e:\\mhl_src\\1231312\\flash1\\test1.mhl\" -tp \"d:\\mhl_dst\\1231312\\flash1\" -lp \"e:\\mhl_src\\1231312\\flash1\" -reset\n";
     consolePrintMessage($str);
